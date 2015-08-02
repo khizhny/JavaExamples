@@ -12,9 +12,6 @@ public class frmCalc {
 	private JFrame frmCalc;
 	private JTextField tValue;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
