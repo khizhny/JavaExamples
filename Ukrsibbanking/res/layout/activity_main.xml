@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:gravity="center"
+        android:text="AAA" />
+
+    <TableLayout
+        android:layout_width="80dp"
+        android:layout_height="fill_parent" >
+
+        <TextView
+            android:id="@+id/accountDifference"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="accountDifference" />
+
+        <TextView
+            android:id="@+id/accountAfter"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="accountAfter" />
+
+        <TextView
+            android:id="@+id/accountBefore"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="accountBefore" />
+    </TableLayout>
+
+    <TextView
+        android:id="@+id/smsText"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="top|left"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="SMS_text" />
+
+</LinearLayout>
