@@ -2,7 +2,13 @@
 <resources>
 
     <string name="app_name">Ukrsibbanking</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="AAA">AAA</string>
+    <string name="SMS_TEXT">SMS TEXT</string>
+    <string name="acc_state_after">acc_state_after</string>
+    <string name="acc_state_before">acc_state_before</string>
+    <string name="acc_state_difference">acc_state_difference</string>
     <string name="action_settings">Settings</string>
-
+    <string name="action_quit">Quit</string>
+	<string name="settings_phone_number">Phone Number</string>
 </resources>
+

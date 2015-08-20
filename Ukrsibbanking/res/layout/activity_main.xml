@@ -4,52 +4,54 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
     android:orientation="horizontal" >
 
-    <TextView
-        android:id="@+id/TextView01"
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="left"
-        android:gravity="center"
-        android:text="AAA" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:src="@android:drawable/ic_menu_add" />
 
-    <TableLayout
+    <LinearLayout
+        android:id="@+id/LinearLayout2"
         android:layout_width="80dp"
-        android:layout_height="fill_parent" >
-
-        <TextView
-            android:id="@+id/accountDifference"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="accountDifference" />
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/accountAfter"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:layout_weight="1"
+            android:layout_gravity="right"
             android:gravity="right"
-            android:text="accountAfter" />
+            android:text="@string/acc_state_after" />
+
+        <TextView
+            android:id="@+id/accountDifference"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_gravity="right"
+            android:gravity="right"
+            android:text="@string/acc_state_difference" />
 
         <TextView
             android:id="@+id/accountBefore"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:layout_weight="1"
+            android:layout_gravity="right"
             android:gravity="right"
-            android:text="accountBefore" />
-    </TableLayout>
+            android:text="@string/acc_state_before" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/smsText"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="top|left"
-        android:layout_weight="1"
-        android:gravity="center_horizontal"
-        android:text="SMS_text" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:text="@string/SMS_TEXT" />
 
 </LinearLayout>

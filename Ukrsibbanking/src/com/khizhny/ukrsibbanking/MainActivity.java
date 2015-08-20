@@ -2,6 +2,8 @@ package com.khizhny.ukrsibbanking;
 
 //import android.support.v7.app.ActionBarActivity;
 import android.app.ListActivity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,12 +13,13 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.khizhny.ukrsibbanking.cSMS;
 public class MainActivity extends ListActivity {
-
+	public static final String PREFS_MAIN_SETTINGS = "MainSettings";
 	public static String[][] CURRENCY={{"UAH","UAH","EUR","USD","USD"},  // Задаем возможные обозначение валюты в СМС
 	                                   {"UAH","грн","EUR","USD","$"}};
 	public static String VAR_TRANCANCTION_DATE_DD_MM_YYYY_HH_MM_SS = "##TRANCANCTION_DATE_DD_MM_YYYY_HH_MM_SS##";
@@ -30,6 +33,11 @@ public class MainActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//setContentView(R.layout.activity_main);
+		
+		// Restore preferences	     
+		SharedPreferences settings = getSharedPreferences(PREFS_MAIN_SETTINGS, 0);
+		String phonenumber= settings.getString("PhoneNumber","729");	    
+			    
 		List<cSMS> smsList = new ArrayList<cSMS>();
 		
 		Uri uri = Uri.parse("content://sms/inbox");
@@ -63,14 +71,14 @@ public class MainActivity extends ListActivity {
 			Z       Time zone               RFC 822 time zone   -0800
 			X       Time zone               ISO 8601 time zone  -08; -0800; -08:00
 		 * */
-		//String[] temp;		
+		//String[] temp;
 		// Read the SMS data and store it in the list
 		if(c.moveToFirst()) {
 			for(int i=0; i < c.getCount(); i++) {
 				cSMS sms = new cSMS();
 				sms_body=c.getString(c.getColumnIndexOrThrow("body")).toString();
 				sms_sender=c.getString(c.getColumnIndexOrThrow("address")).toString();
-				if(sms_sender.equals("729")) { 
+				if(sms_sender.equals(phonenumber)) { 
 					sms.setBody(sms_body);
 					sms.setNumber(sms_sender);			
 					if (sms_body.matches("Popovnennya rakhunku: .*, rakhunok .* na sumu .*\\. Dostupniy zalyshok .*\\.")) {
@@ -79,6 +87,13 @@ public class MainActivity extends ListActivity {
 						sms.setAccountNumber(sms.getWordAfter(", rakhunok ", " "));
 						sms.setAccountDifferencePlusFromString(sms.getWordBetween(" na sumu ", ". Dostupniy zalyshok "));
 						sms.setAccountStateAfterFromString(sms.getWordBetween("Dostupniy zalyshok ", "Anystring"));
+					}
+					if (sms_body.matches("Otrymannia gotivky: .* kartka .* na sumu .*\\. Dostupnyi zalyshok .*\\.")) {
+						date_string = sms.getWordBefore("kartka"," ", 2);
+						sms.setTransanctionDateFromString(date_string, "dd.MM.yyyy HH:mm");
+						sms.setCardNumber(sms.getWordAfter(" kartka ", " "));
+						sms.setAccountDifferenceMinusFromString(sms.getWordBetween(" na sumu ", ". Dostupnyi zalyshok "));
+						sms.setAccountStateAfterFromString(sms.getWordBetween("Dostupnyi zalyshok ", "Anystring"));
 					}
 					smsList.add(sms);
 				}
@@ -91,6 +106,12 @@ public class MainActivity extends ListActivity {
 		setListAdapter(new ListAdapter(this, smsList));
 		
 	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.onStart();
+        // The activity has become visible (it is now "resumed").
+    }
 
 
 	@Override
@@ -107,6 +128,14 @@ public class MainActivity extends ListActivity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			Intent intent = new Intent(this, SettingsActivity.class);
+		   //intent.putExtra("com.khizhny.ukrsibbanking.SettingsActivity", "");
+		    startActivity(intent);
+			return true;
+		}
+		if (id == R.id.action_quit) {
+			this.finish();
+			System.exit(0);			
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -118,4 +147,9 @@ public class MainActivity extends ListActivity {
 		Toast.makeText(getApplicationContext(), sms.getBody(), Toast.LENGTH_LONG).show();
 		
 	}
+	public static float round(float d, int decimalPlace) {
+	        BigDecimal bd = new BigDecimal(Float.toString(d));
+	        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+	        return bd.floatValue();
+	    }
 }

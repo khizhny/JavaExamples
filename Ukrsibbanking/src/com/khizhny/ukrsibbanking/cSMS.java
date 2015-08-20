@@ -20,10 +20,11 @@ public class cSMS {
 	public String getWordAfter(String splittingWord1, String wordSplitter) {
 		return this.body.split(splittingWord1)[1].split(wordSplitter)[0];
 	}
-	public String getWordBefore(String splittingWord1, String wordSplitter) {
-		String temp = this.body.split(splittingWord1)[0];
-		int i=temp.lastIndexOf(wordSplitter);
-		return temp.substring(i+1);
+	public String getWordBefore(String searchedWord, String wordSplitter,  int wordCount) {
+		String temp = this.body.split(searchedWord)[0];
+		String[] arr=temp.split(wordSplitter);
+		int wordsCount = arr.length; 
+		return (arr[wordsCount-2]+wordSplitter+arr[wordsCount-1]);
 	}
 	private String getCurrency(String s){
 		String rez="";
@@ -60,6 +61,7 @@ public class cSMS {
 	private String number;	
 	private Date transanctionDate;
 	private String accountNumber;
+	private String cardNumber;
 	private String accountStateCurrency;
 	private String accountDifferenceCurrency;
 	private BigDecimal accountStateBefore;
@@ -69,6 +71,7 @@ public class cSMS {
 	
 	public boolean hasTransanctionDate=false;
 	public boolean hasAccountNumber=false;
+	public boolean hasCardNumber=false;
 	public boolean hasAccountStateCurrency=false;
 	public boolean hasAccountDifferenceCurrency=false;
 	public boolean hasAccountStateBefore=false;
@@ -80,6 +83,7 @@ public class cSMS {
 	public String getNumber() {return number;}
 	public Date getTransanctionDate() {return transanctionDate;}
 	public String getAccountNumber() {return accountNumber;}
+	public String getCardNumber() {return cardNumber;}
 	public String getAccountStateCurrency(){return accountStateCurrency;}
 	public BigDecimal getAccountStateBefore(){return accountStateBefore;}
 	public BigDecimal getAccountStateAfter(){return accountStateAfter;}
@@ -112,6 +116,10 @@ public class cSMS {
 		this.accountNumber = accountNumber;
 		hasAccountNumber=true;
 	}
+	public void setCardNumber(String cardNumber) {
+		this.cardNumber = cardNumber;
+		hasCardNumber=true;
+	}	
 	public void setAccountStateCurrency(String accountStateCurrency) {
 		this.accountStateCurrency = accountStateCurrency;
 		hasAccountStateCurrency=true;
