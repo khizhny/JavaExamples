@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.khizhny.ukrsibbanking.BankListActivity" >
+    
+    <item
+        android:id="@+id/action_bank_list_add"
+        android:orderInCategory="100"
+        android:title="@string/action_bank_list_add"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/bank_phone_edit"
+        android:orderInCategory="100"
+        android:title="@string/bank_phone_edit"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/bank_delete"
+        android:orderInCategory="100"
+        android:title="@string/bank_delete"
+        app:showAsAction="never"/>     
+</menu>

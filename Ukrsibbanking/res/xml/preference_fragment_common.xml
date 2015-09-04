@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="Common settings">
+        <CheckBoxPreference
+			 	android:key="default_values"
+			 	android:summary="Check to use default settings."
+			 	android:title="Reset to dafault">
+		</CheckBoxPreference>
+		<ListPreference
+                android:key="bank_list"
+                android:title="@string/pref_bank_list_title"
+                android:summary="@string/pref_bank_list_summary"
+                android:dialogTitle="@string/pref_bank_list_dialog_title" />
+        <EditTextPreference
+				 android:key="address"
+				 android:summary="Address for notifications"
+				 android:title="Address">
+		</EditTextPreference>
+		<ListPreference
+                android:key="currency_list"
+                android:title="@string/pref_account_currency_title"
+                android:summary="@string/pref_account_currency_summary"
+                android:entries="@array/pref_account_currency_entries"
+                android:entryValues="@array/pref_account_currency_values"
+                android:dialogTitle="@string/pref_account_currency_dialog_title" />
+		<Preference android:title="add new currency"
+                android:key="add_new_currency"
+                android:summary="This is a cool button"/>
+    </PreferenceCategory>
+</PreferenceScreen>

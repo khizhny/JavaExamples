@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string-array name="pref_account_currency_entries">
+   <item>USD</item>
+   <item>UAH</item>
+   <item>EUR</item>
+   <item>RUB</item>
+</string-array>
+<string-array name="pref_account_currency_values">
+   <item>USD</item>
+   <item>UAH</item>
+   <item>EUR</item>
+   <item>RUB</item>
+</string-array>
+
+
+</resources>
