@@ -11,13 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ListAdapter extends ArrayAdapter<cSMS> {
+public class TransanctionListAdapter extends ArrayAdapter<cSMS> {
 
     private final Context context;
     private final List<cSMS> smsList;
 	
-	public ListAdapter(Context context, List<cSMS> smsList) {
-		super(context, R.layout.activity_main, smsList);
+	public TransanctionListAdapter(Context context, List<cSMS> smsList) {
+		super(context, R.layout.activity_main_list_row, smsList);
 		this.context = context;
 		this.smsList = smsList;
 	}
@@ -27,7 +27,8 @@ public class ListAdapter extends ArrayAdapter<cSMS> {
 		View rowView = convertView;
 		if (rowView == null) {
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rowView = inflater.inflate(R.layout.activity_main, parent, false);
+			rowView = inflater.inflate(R.layout.activity_main_list_row, parent, false);
+			//rowView.setBackgroundColor(Color.WHITE);
 		}
 
         TextView smsTextView = (TextView) rowView.findViewById(R.id.smsBody);

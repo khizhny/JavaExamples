@@ -25,7 +25,7 @@ public class cBanks {
 	public  void setId(int id){this.id=id;}
 	public  void setActive(int active){this.active=active;}
 	public  void setName(String name){this.name=name.replaceAll("[^A-Za-z]","");}
-	public  void setPhone(String phone){this.phone=phone.replaceAll("[^0-9;]","");}
+	public  void setPhone(String phone){this.phone=phone;}
 	public  void setCountry(String country){this.country=country.replaceAll("[^A-Z]","");}
 	public  void setDefaultCurrency(String dafaultCurrency){this.dafaultCurrency=dafaultCurrency;}
 	//=======================================================Functions=======================

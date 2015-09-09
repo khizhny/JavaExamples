@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,7 +19,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DataBaseHelper extends SQLiteOpenHelper{
 	 
     //The Android's default system path of your application database.
-     private static String DB_PATH = "/data/data/com.khizhny.ukrsibbanking/databases/";
+     //private static String DB_PATH = "/data/data/com.khizhny.ukrsibbanking/databases/";
+     private static  String DB_PATH;
      private static String DB_NAME = "database.db";
   // increment dbLastVersion if db structure is changing. Also increment  "version.version" field in DB.
      private static int dbLastVersion=1;  
@@ -31,7 +35,18 @@ public class DataBaseHelper extends SQLiteOpenHelper{
      */
     public DataBaseHelper(Context context) {
      	super(context, DB_NAME, null, 1);
-        this.myContext = context;
+        this.myContext = context;        
+        PackageManager m = context.getPackageManager();
+        String s = context.getPackageName();
+        PackageInfo p=null;
+		try {
+			p = m.getPackageInfo(s, 0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        s = p.applicationInfo.dataDir;   
+        DB_PATH = s+"/databases/";
     }
  
   /**
@@ -62,7 +77,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	SQLiteDatabase checkDB = null;
     	//String DB_PATH = Context.getFilesDir().getPath();
     	try{
-    		String myPath = DB_PATH + DB_NAME;
+    		String myPath = DB_PATH + DB_NAME;	
     		checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
    		 	// if db version changed recopy is from assets
 	       // SQLiteDatabase db = this.getWritableDatabase();
@@ -163,6 +178,23 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         db.execSQL("UPDATE banks SET active=0");
         db.execSQL("UPDATE banks SET active=1 WHERE _id="+id);
    }
-
+	public String getActiveBankPhone () {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT phone FROM banks WHERE active=1", null);
+        String phone="";
+        if (cursor.moveToFirst()) {
+        	phone=cursor.getString(0);
+        }
+        return phone;
+   }
+	public String getActiveBankCurrency () {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT default_currency FROM banks WHERE active=1", null);
+        String rez="";
+        if (cursor.moveToFirst()) {
+        	rez=cursor.getString(0);
+        }
+        return rez;
+   }
  
 }

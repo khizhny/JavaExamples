@@ -9,16 +9,6 @@
         android:title="@string/action_bank_list"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_preferences"
-        android:orderInCategory="100"
-        android:title="@string/action_preferences"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/action_quit"
         android:orderInCategory="100"
         android:title="@string/action_quit"

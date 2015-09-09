@@ -4,14 +4,14 @@
     tools:context="com.khizhny.ukrsibbanking.BankListActivity" >
     
     <item
-        android:id="@+id/action_bank_list_add"
+        android:id="@+id/bank_add"
         android:orderInCategory="100"
-        android:title="@string/action_bank_list_add"
+        android:title="@string/bank_add"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/bank_phone_edit"
+        android:id="@+id/bank_edit"
         android:orderInCategory="100"
-        android:title="@string/bank_phone_edit"
+        android:title="@string/bank_edit"
         app:showAsAction="never"/>
     <item
         android:id="@+id/bank_delete"

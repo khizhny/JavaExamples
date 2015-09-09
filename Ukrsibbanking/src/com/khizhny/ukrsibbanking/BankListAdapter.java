@@ -1,10 +1,7 @@
 package com.khizhny.ukrsibbanking;
 
-import java.io.IOException;
 import java.util.List;
-
 import android.content.Context;
-import android.database.SQLException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +15,7 @@ public class BankListAdapter extends ArrayAdapter<cBanks> {
     
 	
 	public BankListAdapter(Context context, List<cBanks> bankList) {
-		super(context, R.layout.activity_bank_list, bankList);
+		super(context, R.layout.activity_bank_list_row, bankList);
 		this.context = context;
 		this.bankList = bankList;
 	}
@@ -27,7 +24,7 @@ public class BankListAdapter extends ArrayAdapter<cBanks> {
 		View rowView = convertView;
 		if (rowView == null) {
 			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rowView = vi.inflate(R.layout.activity_bank_list, parent, false);
+			rowView = vi.inflate(R.layout.activity_bank_list_row, parent, false);
             //RadioButton RadioButtonView = (RadioButton)rowView.findViewById(R.id.active);
 		}
 
