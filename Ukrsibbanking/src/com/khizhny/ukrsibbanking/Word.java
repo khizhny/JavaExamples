@@ -1,6 +1,8 @@
 package com.khizhny.ukrsibbanking;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 public class Word extends Button {
@@ -12,6 +14,8 @@ public class Word extends Button {
 	        wordIsStatic=false;
 	        this.wordIndex=wordIndex;
 	        this.word = word;
+	        this.setText(word);
+	        this.setBackgroundColor(Color.GRAY);
 	    }
 		public int getWordIndex() {
 			return wordIndex;

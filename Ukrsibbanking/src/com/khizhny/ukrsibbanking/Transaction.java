@@ -9,16 +9,16 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-public class cSMS implements Comparable<cSMS> {
+public class Transaction implements Comparable<Transaction> {
 	 @Override  
-	  public int compareTo(cSMS o) {
+	  public int compareTo(Transaction o) {
 	    int rez=0;
 		try{rez=o.getTransanctionDate().compareTo(getTransanctionDate());}
 	    catch (Exception e)  { }
 		 return rez;
 	  }
 	// Конструктор класса. Задаем дефолтные значения
-	cSMS(){
+	Transaction(){
 		this.transanctionType=R.drawable.ic_transanction_unknown;
 		this.currencyRate=new BigDecimal(1);
 		this.currencyRate.setScale(3, RoundingMode.HALF_UP);
@@ -80,8 +80,9 @@ public class cSMS implements Comparable<cSMS> {
 			break;
 		}
 		if (!currencyRate.equals(new BigDecimal(1))) {
-					rez+="\n("+currencyRate.multiply(accountDifferencePlus,  MathContext.DECIMAL32).setScale(2)+accountStateCurrency+")";
-					rez+="\n(rate "+currencyRate.toString()+")";
+			BigDecimal calculated_price = currencyRate.multiply(accountDifferencePlus,  MathContext.UNLIMITED).setScale(2, RoundingMode.HALF_UP);
+			rez+="\n("+calculated_price+accountStateCurrency+")";
+			rez+="\n(rate "+currencyRate.toString()+")";
 		}
 		return rez;
 	}

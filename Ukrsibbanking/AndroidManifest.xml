@@ -25,7 +25,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".BankListActivity" android:label="@string/action_bank_list"></activity>
-        <activity android:name=".TextSplitActivity" android:label="@string/action_rule1_text"></activity>
-        <activity android:name=".Rule1Activity" android:label="@string/action_rule1_text"></activity>          
+        <activity android:name=".RuleListActivity" android:label="@string/action_rule_list"></activity>
+        <activity android:name=".TextSplitActivity" android:label="@string/action_rule_text"></activity>
+        <activity android:name=".RuleActivity" android:label="@string/action_rule_text"></activity>  
+        <activity android:name=".BankActivity" android:label="@string/action_bank_text"></activity>
+        <activity android:name=".PreferencesActivity" android:label="@string/action_preferences"></activity>
     </application>
 </manifest>
+

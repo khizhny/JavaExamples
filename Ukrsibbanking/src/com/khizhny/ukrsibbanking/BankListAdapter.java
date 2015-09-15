@@ -8,13 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.TextView;
-public class BankListAdapter extends ArrayAdapter<cBanks> {
+public class BankListAdapter extends ArrayAdapter<Bank> {
 
     private final Context context;
-    private final List<cBanks> bankList;
+    private final List<Bank> bankList;
     
 	
-	public BankListAdapter(Context context, List<cBanks> bankList) {
+	public BankListAdapter(Context context, List<Bank> bankList) {
 		super(context, R.layout.activity_bank_list_row, bankList);
 		this.context = context;
 		this.bankList = bankList;

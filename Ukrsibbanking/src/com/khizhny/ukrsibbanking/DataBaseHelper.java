@@ -23,7 +23,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
      private static  String DB_PATH;
      private static String DB_NAME = "database.db";
   // increment dbLastVersion if db structure is changing. Also increment  "version.version" field in DB.
-     private static int dbLastVersion=1;  
+     private static int dbLastVersion=2;  
      
      private SQLiteDatabase myDataBase; 
      private final Context myContext;
@@ -150,8 +150,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
  
 	}
 	//===============================custom methods===========================
-	public List<cBanks> getAllBanks () {
-		 List<cBanks> bankList = new ArrayList<cBanks>();
+	public List<Bank> getAllBanks () {
+		 List<Bank> bankList = new ArrayList<Bank>();
 	        // Select All Query
 		 String selectQuery = "SELECT _id, name, phone, active, default_currency FROM banks";
 	 
@@ -161,7 +161,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	        // looping through all rows and adding to list
 	        if (cursor.moveToFirst()) {
 	            do {
-	                cBanks bank = new cBanks();
+	                Bank bank = new Bank();
 	                bank.setId(Integer.parseInt(cursor.getString(0)));
 	                bank.setName(cursor.getString(1));
 	                bank.setPhone(cursor.getString(2));
@@ -177,6 +177,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE banks SET active=0");
         db.execSQL("UPDATE banks SET active=1 WHERE _id="+id);
+   }
+public void setActiveAnyBank () {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE banks SET active=0");
+        db.execSQL("UPDATE banks SET active=1 WHERE _id=(SELECT MAX(_id) FROM banks)");
    }
 	public String getActiveBankPhone () {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -196,5 +201,94 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         }
         return rez;
    }
- 
+	public Bank getActiveBank () {
+		Bank b = new Bank();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT _id, name, phone, active, default_currency FROM banks WHERE active=1", null);
+        if (cursor.moveToFirst()) {
+        	b.setId(cursor.getInt(0));
+        	b.setName(cursor.getString(1));
+        	b.setPhone(cursor.getString(2));
+        	b.setActive(cursor.getInt(3));
+        	b.setDefaultCurrency(cursor.getString(4));
+        }
+        db.close();
+        return b;
+	}
+	public void deleteActiveBank () {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // deleting all subrules and rules of active bank
+        db.execSQL("DELETE FROM subrules WHERE rule_id=(SELECT _id FROM rules WHERE bank_id=(SELECT _id FROM banks WHERE active=1))");
+        db.execSQL("DELETE FROM rules WHERE bank_id=(SELECT _id FROM banks WHERE active=1)");
+        db.execSQL("DELETE FROM banks WHERE active=1");
+   }
+	public void addOrEditBank (Bank b) {
+        SQLiteDatabase db = this.getWritableDatabase();
+		if (b.getId()<0){
+			// Adding new bank
+			String name = b.getName();
+			String phone = b.getPhone();
+			String default_currency = b.getDefaultCurrency();
+			db.execSQL("UPDATE banks SET active=0");
+			db.execSQL("INSERT INTO banks (name, phone, active, default_currency) VALUES('"+name+"','"+phone+"',1,'"+default_currency+"')");
+		}else
+		{	// Updating bank info
+			int id = b.getId();
+			String name = b.getName();
+			String phone = b.getPhone();
+			String default_currency = b.getDefaultCurrency();
+			db.execSQL("UPDATE banks SET name='"+name+"', phone='"+phone+"', default_currency='"+default_currency+"' WHERE _id="+id);
+		}
+		db.close();
+	}
+	public List<Rule> getAllRules(){
+		 List<Rule> ruleList = new ArrayList<Rule>();
+		 String selectQuery = "SELECT _id, name, sms_body, mask, selected_words, bank_id, type FROM rules WHERE bank_id=(SELECT _id FROM banks WHERE active=1)";
+		 SQLiteDatabase db = this.getWritableDatabase();
+	     Cursor cursor = db.rawQuery(selectQuery, null);
+	     // looping through all rows and adding to list
+	     if (cursor.moveToFirst()) {
+	     	do {
+                Rule r = new Rule(cursor.getInt(5),cursor.getString(1));
+                r.setId(Integer.parseInt(cursor.getString(0)));
+                r.setSmsBody(cursor.getString(2));
+                r.setMask(cursor.getString(3));
+                r.setSelectedWords(cursor.getString(4));
+                r.setRuleType(cursor.getInt(6));
+                // Adding contact to list
+                ruleList.add(r);
+            } while (cursor.moveToNext());
+        }
+        return ruleList;
+	}
+	public void addOrEditRule(Rule r){
+		 SQLiteDatabase db = this.getWritableDatabase();
+			String name = r.getName();
+			String sms_body = r.getSmsBody();
+			String mask = r.getMask();
+			String selectedWords=r.getSelectedWords();
+			int bankId = r.getBankId();
+			int type = r.getRuleType();
+			int id = r.getId();
+			if (id<0){
+				// Adding new Rule
+				db.execSQL("INSERT INTO rules (name, sms_body, mask, selected_words, bank_id, type) VALUES('"+name+"','"+sms_body+"','"+mask+"','"+selectedWords+"',"+bankId+","+type+")");
+			}else
+			{	// Updating Rule info
+				db.execSQL("UPDATE rules SET name='"+name+"', sms_body='"+sms_body+"', mask='"+mask+"', selectedWords='"+selectedWords+"',bank_id="+bankId+",type="+type+" WHERE _id="+id);
+			}
+			db.close();
+	}
+	public Rule getRule(int ruleId){
+		 String selectQuery = "SELECT _id, name, sms_body, mask, selected_words, bank_id, type FROM rules WHERE _id="+ruleId;
+		 SQLiteDatabase db = this.getWritableDatabase();
+		 Cursor cursor = db.rawQuery(selectQuery, null);
+		 Rule r = new Rule(cursor.getInt(5),cursor.getString(1));
+         r.setId(cursor.getInt(0));
+         r.setSmsBody(cursor.getString(2));
+         r.setMask(cursor.getString(3));
+         r.setSelectedWords(cursor.getString(4));
+         r.setRuleType(cursor.getInt(6));
+         return r;
+	}
 }

@@ -11,12 +11,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class TransanctionListAdapter extends ArrayAdapter<cSMS> {
+public class TransanctionListAdapter extends ArrayAdapter<Transaction> {
 
     private final Context context;
-    private final List<cSMS> smsList;
+    private final List<Transaction> smsList;
 	
-	public TransanctionListAdapter(Context context, List<cSMS> smsList) {
+	public TransanctionListAdapter(Context context, List<Transaction> smsList) {
 		super(context, R.layout.activity_main_list_row, smsList);
 		this.context = context;
 		this.smsList = smsList;
@@ -28,29 +28,39 @@ public class TransanctionListAdapter extends ArrayAdapter<cSMS> {
 		if (rowView == null) {
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			rowView = inflater.inflate(R.layout.activity_main_list_row, parent, false);
-			//rowView.setBackgroundColor(Color.WHITE);
 		}
-
-        TextView smsTextView = (TextView) rowView.findViewById(R.id.smsBody);
+		TextView smsTextView;		
+        
+		smsTextView = (TextView) rowView.findViewById(R.id.smsBody);
         smsTextView.setText(smsList.get(position).getBody());
+        if (smsList.get(position).getBody().equals("<No messages about transaction(s)>"))
+        {
+        	smsTextView.setBackgroundColor(Color.parseColor("#F7C1EF")); // pink
+        }else{
+        	smsTextView.setBackgroundColor(0);
+        }
         
+        TextView accountBeforeView = (TextView) rowView.findViewById(R.id.accountBefore);
         if (smsList.get(position).hasAccountStateBefore){
-        	TextView accountBeforeView = (TextView) rowView.findViewById(R.id.accountBefore);
         	accountBeforeView.setText(smsList.get(position).getAccountStateBeforeAsString());
+        } else {
+        	accountBeforeView.setText("");
         }
-       
-        if (smsList.get(position).hasTransanctionDate){
-        	TextView dateView = (TextView) rowView.findViewById(R.id.transanction_date);
+        TextView dateView = (TextView) rowView.findViewById(R.id.transanction_date);
+        if (smsList.get(position).hasTransanctionDate){        	
         	dateView.setText(smsList.get(position).getTransanctionDateAsString("dd.MM.yyyy"));
+        }else {
+        	dateView.setText("");
         }
-       
+        TextView accountAfterView = (TextView) rowView.findViewById(R.id.accountAfter);
         if (smsList.get(position).hasAccountStateAfter){
-	        TextView accountAfterView = (TextView) rowView.findViewById(R.id.accountAfter);
 	        accountAfterView.setText(smsList.get(position).getAccountStateAfterAsString());
+        }else {
+        	accountAfterView.setText("");
         }
         
-        if (smsList.get(position).hasAccountDifference){
-        	TextView accountDifferenceView = (TextView) rowView.findViewById(R.id.accountDifference);
+        TextView accountDifferenceView = (TextView) rowView.findViewById(R.id.accountDifference);
+        if (smsList.get(position).hasAccountDifference){        	
         	accountDifferenceView.setText(smsList.get(position).getAccountDifferenceAsString());
 	        switch (smsList.get(position).getAccountDifferencePlus().signum()) {
 	        	case -1:
@@ -62,6 +72,8 @@ public class TransanctionListAdapter extends ArrayAdapter<cSMS> {
 	        	case 1:
 	            	accountDifferenceView.setTextColor(Color.GREEN);        	
 	        }        
+        } else {
+        	accountDifferenceView.setText("");
         }
         
         ImageView iconView = (ImageView) rowView.findViewById(R.id.transanctionIcon);

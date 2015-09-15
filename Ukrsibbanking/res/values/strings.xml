@@ -5,18 +5,22 @@
     <string name="SMS_TEXT">SMS TEXT</string>
     
     <string name="action_bank_list">Manage Banks</string>
-    <string name="action_quit">Quit</string>
-    <string name="action_rule1_text">Creating new rule. Step 1</string>
+    <string name="action_rule_list">Manage Rules</string>
+    <string name="action_preferences">Preferences</string>
     
-    <string name="rule1_message">Pick constant words</string>
-    <string name="rule1_next">Next>></string>
+    <string name="action_quit">Quit</string>
+    <string name="action_save">Save</string>
+    <string name="action_rule_text">Creating new rule</string>
+    <string name="action_bank_text">Bank account info</string>
+    
+    <string name="rule_message">Pick constant words:</string>
+    <string name="rule_next">Next>></string>
+    <string name="rule_name">Rule name:</string>
     
     <string name="bank_add">Add</string>
     <string name="bank_edit">Edit</string>
     <string name="bank_delete">Delete</string>
-    
-    
-	
+
 	<string name="settings_account_currency">Account Currency</string>
 	<string name="pref_account_currency_title">Account currency</string>
 	<string name="pref_account_currency_summary">Choose default account currency</string>
@@ -25,7 +29,11 @@
 	<string name="popup_create_rule">Create new rule</string>
 	<string name="pref_bank_list_title">My Bank</string>
 	<string name="pref_bank_list_summary">Select bank to process</string>
-	<string name="pref_bank_list_dialog_title">Choose your bank from the list</string>	
+	<string name="pref_bank_list_dialog_title">Choose your bank from the list</string>
+	<string name="account_default_currency">Bank account default currency:</string>
+	<string name="bank_account_name">Bank account name:</string>
+	<string name="sms_bank_sender">Bank SMS sender number (or name):</string>
+	<string name="rule_type">Transaction type:</string>
 	
 </resources>
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="Common settings">
+        <CheckBoxPreference
+			 	android:key="hide_messages"
+			 	android:summary="Check to hide messages with no rule applied."
+			 	android:title="Show only matched messages.">
+		</CheckBoxPreference>
+    </PreferenceCategory>
+</PreferenceScreen>

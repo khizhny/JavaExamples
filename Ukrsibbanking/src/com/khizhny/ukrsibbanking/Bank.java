@@ -1,17 +1,16 @@
 package com.khizhny.ukrsibbanking;
 
 
-public class cBanks {
+public class Bank {
 	// Конструктор класса. Задаем дефолтные значения
-	cBanks(){
-	
+	Bank(){
+		id=-1;
 	}
 	// Information about your bank account
 	private int id;
 	private int active;  // indicates that user want to watch this account info in program.
 	private String name; 
 	private String phone;
-	private String country;
 	private String dafaultCurrency;
 
 	//=======================================================GETs============================
@@ -19,14 +18,12 @@ public class cBanks {
 	public int getActive() {return active;}
 	public String getName() {return name;}
 	public String getPhone() {return phone;}
-	public String getCountry() {return country;}
 	public String getDefaultCurrency() {return dafaultCurrency;}
 	//=======================================================SETs============================
 	public  void setId(int id){this.id=id;}
 	public  void setActive(int active){this.active=active;}
-	public  void setName(String name){this.name=name.replaceAll("[^A-Za-z]","");}
-	public  void setPhone(String phone){this.phone=phone;}
-	public  void setCountry(String country){this.country=country.replaceAll("[^A-Z]","");}
+	public  void setName(String name){this.name=name.replaceAll("'","");}
+	public  void setPhone(String phone){this.phone=phone.replace("'", "");}
 	public  void setDefaultCurrency(String dafaultCurrency){this.dafaultCurrency=dafaultCurrency;}
 	//=======================================================Functions=======================
 	public boolean isActive() {

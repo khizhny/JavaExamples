@@ -14,11 +14,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BankListActivity extends AppCompatActivity{
+public class RuleListActivity extends AppCompatActivity{
 	private ListView listView;
-	private List<Bank> bankList;
-	private BankListAdapter adapter;
-	private int selected_row;
+	private List<Rule> ruleList;
+	private RuleListAdapter adapter;
+	int selected_row;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,17 +27,16 @@ public class BankListActivity extends AppCompatActivity{
 		listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {              
-            	// Marking selected bank as Active in DB
+            	// if some rule clicked open popup window with options Add,Edit,Delete.
             	selected_row=position;
-            	Bank bank = (Bank)listView.getItemAtPosition(position);
-	    		Toast.makeText(BankListActivity.this, bank.getName()+" is set as active", Toast.LENGTH_SHORT).show();
-	    		DataBaseHelper myDb = new DataBaseHelper(BankListActivity.this);
+            	Rule rule = (Rule) listView.getItemAtPosition(position);
+	    		/*DataBaseHelper myDb = new DataBaseHelper(RuleListActivity.this);
 	        	myDb.openDataBase();
-	        	myDb.setActiveBank(bank.getId());
+	        	myDb.setActiveBank(rule.getId());
 	        	myDb.close();
-	        	bankList.clear();
-	        	bankList.addAll(myDb.getAllBanks());
-	        	adapter.notifyDataSetChanged();
+	        	ruleList.clear();
+	        	ruleList.addAll(myDb.getAllBanks());
+	        	adapter.notifyDataSetChanged();/**/
             }
        }); 
 	}
@@ -45,29 +44,17 @@ public class BankListActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        bankList=new ArrayList<Bank>();
-    	DataBaseHelper myDbHelper = new DataBaseHelper(this);
+        ruleList=new ArrayList<Rule>();
+    	DataBaseHelper db = new DataBaseHelper(this);
 	 	try {	 
-	 		myDbHelper.openDataBase();
+	 		db.openDataBase();
 	 	}catch(SQLException sqle){throw sqle;}
-	 	bankList=myDbHelper.getAllBanks();
-	 	for (int i=0;i<bankList.size();i++) {
-	 		if (bankList.get(i).isActive()) {
-	 			selected_row=i;
-	 		}
-	 	}
-	 	adapter  = new BankListAdapter(this, bankList);
+	 	ruleList=db.getAllRules();
+	 	adapter  = new RuleListAdapter(this, ruleList);
 		listView.setAdapter(adapter);		
     }
 
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu if Munu button pressed
-		getMenuInflater().inflate(R.menu.banks, menu);
-		return true;
-	}
-
+/*
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handling Menu item Clicks
@@ -97,5 +84,5 @@ public class BankListActivity extends AppCompatActivity{
 		    return true;
 		}
 		return false;
-	}
+	}/**/
 }
