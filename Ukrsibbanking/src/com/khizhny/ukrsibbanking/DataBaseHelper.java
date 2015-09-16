@@ -16,6 +16,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 public class DataBaseHelper extends SQLiteOpenHelper{
 	 
     //The Android's default system path of your application database.
@@ -129,7 +130,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     public void openDataBase() throws SQLException{
      	//Open the database
         String myPath = DB_PATH + DB_NAME;
-    	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY); 
+        try {
+        	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        } 
+        catch(SQLException sqle)
+        {
+        	throw sqle;
+        }
     }
  
     @Override
@@ -212,7 +219,6 @@ public void setActiveAnyBank () {
         	b.setActive(cursor.getInt(3));
         	b.setDefaultCurrency(cursor.getString(4));
         }
-        db.close();
         return b;
 	}
 	public void deleteActiveBank () {
@@ -239,7 +245,6 @@ public void setActiveAnyBank () {
 			String default_currency = b.getDefaultCurrency();
 			db.execSQL("UPDATE banks SET name='"+name+"', phone='"+phone+"', default_currency='"+default_currency+"' WHERE _id="+id);
 		}
-		db.close();
 	}
 	public List<Rule> getAllRules(){
 		 List<Rule> ruleList = new ArrayList<Rule>();
@@ -261,7 +266,7 @@ public void setActiveAnyBank () {
         }
         return ruleList;
 	}
-	public void addOrEditRule(Rule r){
+	public int addOrEditRule(Rule r){
 		 SQLiteDatabase db = this.getWritableDatabase();
 			String name = r.getName();
 			String sms_body = r.getSmsBody();
@@ -273,22 +278,92 @@ public void setActiveAnyBank () {
 			if (id<0){
 				// Adding new Rule
 				db.execSQL("INSERT INTO rules (name, sms_body, mask, selected_words, bank_id, type) VALUES('"+name+"','"+sms_body+"','"+mask+"','"+selectedWords+"',"+bankId+","+type+")");
+				Cursor c=db.rawQuery("SELECT MAX(_id) FROM rules",null);
+				if (c.moveToFirst()) {
+					id= c.getInt(0);
+				}
 			}else
 			{	// Updating Rule info
-				db.execSQL("UPDATE rules SET name='"+name+"', sms_body='"+sms_body+"', mask='"+mask+"', selectedWords='"+selectedWords+"',bank_id="+bankId+",type="+type+" WHERE _id="+id);
+				db.execSQL("UPDATE rules SET name='"+name+"', sms_body='"+sms_body+"', mask='"+mask+"', selected_words='"+selectedWords+"',bank_id="+bankId+",type="+type+" WHERE _id="+id);
 			}
-			db.close();
+			return id;
 	}
 	public Rule getRule(int ruleId){
 		 String selectQuery = "SELECT _id, name, sms_body, mask, selected_words, bank_id, type FROM rules WHERE _id="+ruleId;
 		 SQLiteDatabase db = this.getWritableDatabase();
 		 Cursor cursor = db.rawQuery(selectQuery, null);
-		 Rule r = new Rule(cursor.getInt(5),cursor.getString(1));
-         r.setId(cursor.getInt(0));
-         r.setSmsBody(cursor.getString(2));
-         r.setMask(cursor.getString(3));
-         r.setSelectedWords(cursor.getString(4));
-         r.setRuleType(cursor.getInt(6));
+		 Rule r;
+		 if (cursor.moveToFirst()) {
+			 r = new Rule(cursor.getInt(5),cursor.getString(1));
+	         r.setId(cursor.getInt(0));
+	         r.setSmsBody(cursor.getString(2));
+	         r.setMask(cursor.getString(3));
+	         r.setSelectedWords(cursor.getString(4));
+	         r.setRuleType(cursor.getInt(6));
+		 }
+		 else {
+			 Log.e("DatabaseHelper.getRule", "rule id duplicated or not found.");
+			 return null;
+		 }
          return r;
 	}
+	public void deleteRule (int ruleId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // deleting all subrules and rule
+        db.execSQL("DELETE FROM subrules WHERE rule_id="+ruleId);
+        db.execSQL("DELETE FROM rules WHERE _id="+ruleId);
+   }
+	public List<SubRule> getSubRules(int ruleId){
+		 List<SubRule> subRuleList = new ArrayList<SubRule>();
+		 String selectQuery = "SELECT _id, left_phrase,right_phrase, distance_to_left_phrase, distance_to_right_phrase, constant_value, extracted_parameter,extraction_method  FROM subrules WHERE rule_id="+ruleId;
+		 SQLiteDatabase db = this.getWritableDatabase();
+	     Cursor cursor = db.rawQuery(selectQuery, null);
+	     // looping through all rows and adding to list
+	     if (cursor.moveToFirst()) {
+	     	do {
+               SubRule r = new SubRule(ruleId);
+               r.setId(Integer.parseInt(cursor.getString(0)));
+               r.setLeftPhrase(cursor.getString(1));
+               r.setRightPhrase(cursor.getString(2));
+               r.setDistanceToLeftPhrase(cursor.getInt(3));
+               r.setDistanceToRightPhrase(cursor.getInt(4));
+               r.setConstantValue(cursor.getString(5));
+               r.setExtractedParameter(cursor.getInt(6));
+               r.setExtractionMethod(cursor.getInt(7));
+               // Adding contact to list
+               subRuleList.add(r);
+           } while (cursor.moveToNext());
+       }
+       return subRuleList;
+	}
+	public int addOrEditSubRule(SubRule sr){
+		SQLiteDatabase db = this.getWritableDatabase();
+		int id = sr.getId();
+		int ruleId=sr.getRuleId();
+		String LeftPhrase=sr.getLeftPhrase();
+		String RightPhrase=sr.getRightPhrase();
+		int leftN = sr.getDistanceToLeftPhrase();
+		int rightN = sr.getDistanceToRightPhrase();
+		String constanValue=sr.getConstantValue();
+		int extractionParameter=sr.getExtractedParameter();
+		int extractionMethod=sr.getExtractionMethod();
+		
+		if (id<0){
+			// Adding new SubRule
+			db.execSQL("INSERT INTO subrules (rule_id,left_phrase,right_phrase,distance_to_left_phrase,distance_to_right_phrase,constant_value,extracted_parameter,extraction_method) "
+					+ "VALUES("+ruleId+",'"+LeftPhrase+"','"+RightPhrase+"',"+leftN+","+rightN+",'"+constanValue+"',"+extractionParameter+","+extractionMethod+")");
+			Cursor c=db.rawQuery("SELECT MAX(_id) FROM subrules",null);
+			if (c.moveToFirst()) {
+				id= c.getInt(0);
+			}
+		}else
+		{	// Updating Rule info
+			db.execSQL("UPDATE subrules SET rule_id="+ruleId+",left_phrase='"+LeftPhrase+"',right_phrase='"+RightPhrase+"',distance_to_left_phrase="+leftN+",distance_to_right_phrase="+rightN+",constant_value='"+constanValue+"',extracted_parameter="+extractionParameter+",extraction_method="+extractionMethod+" WHERE _id="+id);
+		}
+		return id;
+	}
+	public void deleteSubRule (int subRuleId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM subrules WHERE _id="+subRuleId);
+   }
 }

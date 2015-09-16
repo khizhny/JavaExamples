@@ -1,6 +1,7 @@
 package com.khizhny.ukrsibbanking;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class SubRule {
 	private int id;
@@ -9,22 +10,18 @@ public class SubRule {
 	private int distanceToRightPhrase;
 	private String leftPhrase;
 	private String rightPhrase;
-	private BigDecimal constantValue;
+	private String constantValue;
 	private int extractedParameter;
-	private final String[] extractedParameterDescription=
-		{"Account state before transaction",
-		 "Account state after transaction",
-		 "Account difference (+)",
-		 "Account difference (-)",
-		 "Transaction commission",
-		 "Transaction currency",
-		 "Use constant Value"};
 	private int extractionMethod;
-	private final String[] extractionMethodDescription=
-		{"n-th word after Left Phrase",
-		 "n-th word before Right Phrase",
-		 "all words between LeftPhrase and RightPhrase",
-		 "Use constant Value"};
+	
+	SubRule(int ruleId){
+		this.ruleId=ruleId;
+		this.id=-1;
+		distanceToLeftPhrase=1;
+		distanceToRightPhrase=1;
+		extractedParameter=0;
+		extractionMethod=0;
+	}
 	
 	public int getId() {
 		return id;
@@ -63,10 +60,11 @@ public class SubRule {
 	public void setExtractionMethod(int extractionMethod) {
 		this.extractionMethod = extractionMethod;
 	}
-	public BigDecimal getConstantValue() {
+	public String getConstantValue() {
 		return constantValue;
 	}
-	public void setConstantValue(BigDecimal constantValue) {
+
+	public void setConstantValue(String constantValue) {
 		this.constantValue = constantValue;
 	}
 	public int getExtractedParameter() {

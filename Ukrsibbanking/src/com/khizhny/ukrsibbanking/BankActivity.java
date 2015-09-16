@@ -52,7 +52,7 @@ public class BankActivity extends AppCompatActivity {
         }
         myDb.close();
         
-        Button saveView = (Button) findViewById(R.id.save);
+        Button saveView = (Button) findViewById(R.id.sub_rule_save);
         saveView.setOnClickListener(new View.OnClickListener() {
 	         public void onClick(View v) {
 	        	 Toast.makeText(v.getContext(), "Saving changes...", Toast.LENGTH_SHORT).show();

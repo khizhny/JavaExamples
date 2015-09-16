@@ -19,9 +19,9 @@ public class Rule {
 	private String name;
 	private String smsBody;
 	private String mask;
-	private int wordsCount;
+	public int wordsCount;
 	private int ruleType;
-	private boolean[] wordIsSelected; 
+	public boolean[] wordIsSelected; 
 	public List<SubRule> subRules;
 	
 	Rule(int bankId, String name){
@@ -130,6 +130,31 @@ public class Rule {
 	}
 	public void setRuleType(int ruleType) {
 		this.ruleType = ruleType;
+	}
+	public List<String> getConstantPhrases()
+	{
+		List<String> out = new ArrayList<String>();
+		out.add("<BEGIN>");
+		int phraseCount=1;
+		boolean startNewPhrase=true;
+		String[] words=smsBody.split(" ");
+		for (int i=1; i<=wordsCount; i++){
+			if (wordIsSelected[i]){
+				if (startNewPhrase) {
+					phraseCount+=1;
+					out.add(words[i-1]);
+					startNewPhrase=false;
+				} else
+				{
+					out.set(phraseCount-1, out.get(phraseCount-1)+" "+(words[i-1]));
+				}
+				
+			}else{
+				startNewPhrase=true;
+			}
+		}
+		out.add("<END>");
+		return out;
 	}
 }
 

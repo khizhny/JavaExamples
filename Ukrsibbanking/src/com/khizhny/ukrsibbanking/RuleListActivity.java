@@ -1,20 +1,19 @@
 package com.khizhny.ukrsibbanking;
 import android.content.Intent;
-import android.database.SQLException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.PopupMenu;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RuleListActivity extends AppCompatActivity{
+public class RuleListActivity extends AppCompatActivity implements OnMenuItemClickListener{
 	private ListView listView;
 	private List<Rule> ruleList;
 	private RuleListAdapter adapter;
@@ -29,16 +28,13 @@ public class RuleListActivity extends AppCompatActivity{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {              
             	// if some rule clicked open popup window with options Add,Edit,Delete.
             	selected_row=position;
-            	Rule rule = (Rule) listView.getItemAtPosition(position);
-	    		/*DataBaseHelper myDb = new DataBaseHelper(RuleListActivity.this);
-	        	myDb.openDataBase();
-	        	myDb.setActiveBank(rule.getId());
-	        	myDb.close();
-	        	ruleList.clear();
-	        	ruleList.addAll(myDb.getAllBanks());
-	        	adapter.notifyDataSetChanged();/**/
+            	PopupMenu popupMenu = new PopupMenu(RuleListActivity.this, view);
+        		popupMenu.setOnMenuItemClickListener(RuleListActivity.this);
+        		popupMenu.inflate(R.menu.rule_list_popup_menu);
+        		popupMenu.show();
             }
        }); 
+	
 	}
 	
     @Override
@@ -46,43 +42,43 @@ public class RuleListActivity extends AppCompatActivity{
         super.onResume();
         ruleList=new ArrayList<Rule>();
     	DataBaseHelper db = new DataBaseHelper(this);
-	 	try {	 
-	 		db.openDataBase();
-	 	}catch(SQLException sqle){throw sqle;}
+	 	db.openDataBase();
 	 	ruleList=db.getAllRules();
 	 	adapter  = new RuleListAdapter(this, ruleList);
 		listView.setAdapter(adapter);		
     }
 
-/*
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handling Menu item Clicks
-		Intent intent = new Intent(this, BankActivity.class);
+	public boolean onMenuItemClick(MenuItem item) {
+		// handles popup menu items click
+		Rule r=adapter.getItem(selected_row);
+		Intent intent;
 		switch (item.getItemId()) {
-		case R.id.bank_add:
-			// Calligng Bank Activity to add new Bank
+		case R.id.item_new_rule:
+			//Toast.makeText(this, "not implemented yet", Toast.LENGTH_SHORT).show();
+			intent = new Intent(this, RuleActivity.class);
+			intent.putExtra("sms_body", r.getSmsBody());
 			intent.putExtra("todo", "add");
-		    startActivity(intent);
-		    adapter.notifyDataSetChanged();
+		    startActivity(intent);		    
 			return true;
-		case R.id.bank_edit:
+		case R.id.item_edit_rule:
+			//Toast.makeText(this, "not implemented yet", Toast.LENGTH_SHORT).show();
+			intent = new Intent(this, RuleActivity.class);
+			intent.putExtra("rule_id", r.getId());
 			intent.putExtra("todo", "edit");
-		    startActivity(intent);
-		    adapter.notifyDataSetChanged();
+		    startActivity(intent);		    
 			return true;
-		case R.id.bank_delete:
+		case R.id.item_delete_rule:
 			DataBaseHelper db = new DataBaseHelper(this);
-		 	try {	 
-		 		db.openDataBase();
-		 	} catch(SQLException sqle){throw sqle;}
-			 db.deleteActiveBank();
-			 db.setActiveAnyBank();
-			 db.close();
-			 bankList.remove(selected_row);
-			 adapter.notifyDataSetChanged();
+		 	db.openDataBase();
+			db.deleteRule(r.getId());
+			db.close();
+			ruleList.remove(selected_row);
+			adapter.notifyDataSetChanged();
 		    return true;
 		}
-		return false;
-	}/**/
+	return false;
+	}
+
+
 }
