@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:layout_margin="5dp"
+    android:gravity="top"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/sms_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:freezesText="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/sub_rule_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:minHeight="8dp"
+        android:text="@string/sub_rule_add"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/extracted_parameters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:freezesText="true"
+        android:text="@string/sub_rule_parameters"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="15sp" />
+
+    <ListView
+        android:id="@+id/sub_rule_list"
+        android:layout_width="match_parent"
+        android:descendantFocusability="afterDescendants"
+        android:layout_height="wrap_content" >s        
+    </ListView>
+
+</LinearLayout>

@@ -117,7 +117,7 @@ public class RuleActivity extends AppCompatActivity {
 	   }
 
 	   // Adding Next button click handler
-	   Button nextBtn = (Button) this.findViewById(R.id.rule1_next);
+	   Button nextBtn = (Button) this.findViewById(R.id.rule_next);
 	   nextBtn.setOnClickListener(new View.OnClickListener() {
            public void onClick(View v) {
         	   	rule.setName(ruleNameView.getText().toString());

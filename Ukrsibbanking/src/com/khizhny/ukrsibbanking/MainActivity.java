@@ -69,7 +69,13 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 	 	}catch(SQLException sqle){
 	 		throw sqle;
 	 	}
+	 	// reading data from db
 	 	bankList=myDb.getAllBanks();
+	 	ruleList=myDb.getAllRules();
+	 	int rule_count=ruleList.size();
+	 	for (int i=0; i<rule_count;i++){
+	 		ruleList.get(i).subRuleList=myDb.getSubRules(ruleList.get(i).getId());
+	 	}
 	 	phoneNumber= myDb.getActiveBankPhone();
 	 	AccountCurrency=myDb.getActiveBankCurrency();
 	 	myDb.close();
@@ -81,92 +87,58 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 		
 	 	transactionList = new ArrayList<Transaction>();
 		Uri uri = Uri.parse("content://sms/inbox");
-		Cursor c= getContentResolver().query(uri, null, null ,null,null);
+		Cursor c= getContentResolver().query(uri, null, "address='" + phoneNumber+"'" ,null,"date DESC");
 		String sms_body;
-		String sms_sender;
-		Date   sms_date_sent;
 		boolean ruleWasApplied;
-		String date_string;
+		int subRuleCount;
+		Rule rule;
+		SubRule subRule;
+		int msgCount=c.getCount();
 		if(c.moveToFirst()) {
-			for(int i=0; i < c.getCount(); i++) {
-				sms_sender=c.getString(c.getColumnIndexOrThrow("address")).toString();
-				if(sms_sender.equals(phoneNumber)) { 
-					Transaction sms = new Transaction();
-					sms.accountStateCurrency=AccountCurrency;
-					sms_body=c.getString(c.getColumnIndexOrThrow("body")).toString();
-					ruleWasApplied=false;
-					sms_date_sent= new Date(c.getLong(c.getColumnIndexOrThrow("date")));
-					sms.setBody(sms_body);
-					sms.setNumber(sms_sender);
-					sms.setTransanctionDate(sms_date_sent);
-					//Popovnennya rakhunku: 12.08.2015 09:12:21, rakhunok 26251009142308 na sumu 3,000.00UAH. Dostupniy zalyshok 3062.13UAH.
-					if (sms_body.matches("Popovnennya rakhunku: .*, rakhunok .* na sumu .*\\. Dostupniy zalyshok .*\\.")) {
-						date_string = sms.getWordBetween("Popovnennya rakhunku: ",", rakhunok ");
-						sms.setTransanctionDateFromString(date_string, "dd.MM.yyyy HH:mm:ss");
-						sms.setCardNumber(sms.getWordBetween(" rakhunok ", " na sumu "));
-						sms.setAccountNumber(sms.getWordAfter(", rakhunok ", " "));
-						sms.setAccountDifferencePlusFromString(sms.getWordBetween(" na sumu ", ". Dostupniy zalyshok "));
-						sms.setAccountStateAfterFromString(sms.getWordBetween("Dostupniy zalyshok ", "Anystring"));
-						sms.transanctionType=R.drawable.ic_transanction_plus;
+			for(int ii=0; ii < msgCount; ii++) {
+				sms_body=c.getString(c.getColumnIndexOrThrow("body")).toString();
+				ruleWasApplied=false;
+				Transaction sms = new Transaction();
+				sms.accountStateCurrency=AccountCurrency;
+				sms.setTransanctionDate(new Date(c.getLong(c.getColumnIndexOrThrow("date"))));
+				sms.setBody(sms_body);
+				sms.setNumber(phoneNumber);
+				sms.setAccountDifferenceCurrency(AccountCurrency);
+				for (int i=0; i<rule_count;i++){
+					rule=ruleList.get(i);
+					if (sms_body.matches(rule.getMask())) {							
+						sms.transanctionType=ruleList.get(i).getRuleTypeDrawable();
+						subRuleCount=rule.subRuleList.size();
+						for (int j=0; j<subRuleCount; j++){
+							subRule=rule.subRuleList.get(j);
+							switch (subRule.getExtractedParameter()){
+							case 0 : //Account state before transaction
+								sms.setAccountStateBeforeFromString(subRule.applySubRule(sms_body, false));
+								break;
+							case 1 : //Account state after transaction
+								sms.setAccountStateAfterFromString(subRule.applySubRule(sms_body, false));
+								break;
+							case 2 : //Account difference (+)
+								sms.setAccountDifferencePlusFromString(subRule.applySubRule(sms_body, false));
+								break;
+							case 3 : //Account difference (-)
+								sms.setAccountDifferenceMinusFromString(subRule.applySubRule(sms_body, false));
+								break;
+							case 4 : //Transaction commission
+								sms.setComissionFromString(subRule.applySubRule(sms_body, false));
+								break;
+							case 5 : //Transaction currency
+								sms.setAccountDifferenceCurrency(subRule.applySubRule(sms_body, true));
+								break;
+							}
+							
+						}
 						ruleWasApplied=true;
 					}
-					//Otrymannia gotivky: A0309839 UKRSIBBANK, UA 19.08.2015 19:16 kartka 5169***4839 na sumu 4200.00UAH. Dostupnyi zalyshok 45.60UAH.
-					if (sms_body.matches("Otrymannia gotivky: .* kartka .* na sumu .*\\. Dostupnyi zalyshok .*\\.")) {
-						sms.setCardNumber(sms.getWordAfter(" kartka ", " "));						
-						date_string = sms.getWordBefore("kartka"," ", 2);
-						sms.setTransanctionDateFromString(date_string, "dd.MM.yyyy HH:mm");						
-						sms.setAccountDifferenceMinusFromString(sms.getWordBetween(" na sumu ", ". Dostupnyi zalyshok "));
-						sms.setAccountStateAfterFromString(sms.getWordBetween("Dostupnyi zalyshok ", "Anystring"));
-						sms.transanctionType=R.drawable.ic_transanction_minus;
-						ruleWasApplied=true;
-					}
-					//25.06.2015 19:25:37 perekaz 5,000.00UAH z nakopychuvalnoho rakhunku 26206120002800 na 26251009142308. Balans nakopychuvalnogo rakhunku 62,279.87UAH.
-					if (sms_body.matches(".* perekaz .* z nakopychuvalnoho rakhunku .* na .*\\. Balans nakopychuvalnogo rakhunku .*\\.")) {						
-						sms.setTransanctionDateFromString(sms.getWordBefore(" perekaz "," ", 2), "dd.MM.yyyy HH:mm:ss");
-						sms.setAccountDifferencePlusFromString(sms.getWordBetween(" perekaz ", " z nakopychuvalnoho rakhunku "));
-						sms.transanctionType=R.drawable.ic_transanction_transfer_to;
-						ruleWasApplied=true;
-					}
-					if (sms_body.matches(".* perekaz .* z nakopychuvalnoho rakhunku .* na .*\\. Balans nakopychuvalnogo rakhunku .*\\.")) {						
-						sms.setTransanctionDateFromString(sms.getWordBefore(" perekaz "," ", 2), "dd.MM.yyyy HH:mm:ss");
-						sms.setAccountDifferenceMinusFromString(sms.getWordBetween(" perekaz ", " z nakopychuvalnoho rakhunku "));
-						sms.setAccountStateAfterFromString(sms.getWordAfter("Balans nakopychuvalnogo rakhunku ", "Anystring"));
-						sms.transanctionType=R.drawable.ic_transanction_transfer_from;
-						ruleWasApplied=true;
-					}
-					//Neuspishne otrymannia gotivky po karti 5169***4839. Nedostatno koshtiv na rahunku. Dostupnyi zalyshok 41.08UAH. Dovidka: 729.
-					if (sms_body.matches("Neuspishne otrymannia gotivky po karti .*. Nedostatno koshtiv na rahunku\\. Dostupnyi zalyshok .*\\. Dovidka: 729\\.")) {						
-						sms.setTransanctionDate(sms_date_sent);						
-						sms.setAccountStateAfterFromString(sms.getWordBetween("Dostupnyi zalyshok ", ". Dovidka:"));
-						sms.setAccountDifferenceMinusFromString("0");
-						sms.transanctionType=R.drawable.ic_transanction_failed;
-						ruleWasApplied=true;
-					}
-					//Perekaz koshtiv: 25.06.2015 12:14:10, z rakhunku 26251009142308 na rakhunok 26206120002800 suma 5,000.00UAH. Dostupniy zalyshok 41.08UAH.
-					if (sms_body.matches("Perekaz koshtiv: .*, z rakhunku 26251009142308 na rakhunok .* suma .*. Dostupniy zalyshok .*\\.")) {						
-						sms.setTransanctionDate(sms_date_sent);
-						sms.setAccountDifferencePlusFromString(sms.getWordBetween(" suma ", ". Dostupniy zalyshok "));
-						sms.setAccountStateAfterFromString(sms.getWordAfter(" Dostupniy zalyshok ","anystring"));
-						sms.transanctionType=R.drawable.ic_transanction_transfer_to;
-						ruleWasApplied=true;
-					}
-					if (sms_body.matches("Perekaz koshtiv: .*, z rakhunku .* na rakhunok .* suma .*. Dostupniy zalyshok .*\\.")) {						
-						sms.setAccountDifferenceMinusFromString(sms.getWordBetween(" suma ", ". Dostupniy zalyshok "));
-						sms.setAccountStateAfterFromString(sms.getWordAfter(" Dostupniy zalyshok ","anystring"));
-						sms.transanctionType=R.drawable.ic_transanction_transfer_from;
-						ruleWasApplied=true;
-					}
-					//Oplata tovariv: S1K20K60 27TOVNAFTAPETROLIUM, UA 22.06.2015 09:13 kartka 5169***4839 na sumu 923.29UAH. Dostupnyi zalyshok 200.76UAH.
-					//Oplata tovariv: 29744826 ALIBABA.COM, GB 20.06.2015 16:44 kartka 5169***4839 na sumu 22.56USD. Dostupnyi zalyshok 1124.05UAH.
-					if (sms_body.matches("Oplata tovariv: .* kartka .* na sumu .*\\. Dostupnyi zalyshok .*\\.")) {						
-						sms.setTransanctionDateFromString(sms.getWordBefore(" kartka "," ", 2), "dd.MM.yyyy HH:mm");
-						sms.setAccountDifferenceMinusFromString(sms.getWordBetween(" na sumu ", ". Dostupnyi zalyshok"));
-						sms.setAccountStateAfterFromString(sms.getWordAfter("Dostupnyi zalyshok","anystring"));
-						sms.transanctionType=R.drawable.ic_transanction_pay;
-						ruleWasApplied=true;
-					}
-					//Vidmina operatsii z oplaty tovariv: 10333015 ali*aliexpress.com, CN 10.09.2015 01:40 kartka 5169***4839 na sumu 28.01USD. Dostupnyi zalyshok 22718.15UAH.
-					if (ruleWasApplied || !hide_messages) {transactionList.add(sms);}
+				}
+				if (ruleWasApplied || !hide_messages) {
+					sms.calculateMissedData();
+					transactionList.add(sms);
 				}
 				c.moveToNext();
 			}
@@ -187,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 				if (transactionList.get(i).hasAccountStateAfter && transactionList.get(i-1).hasAccountStateBefore ) {
 					if (!transactionList.get(i).getAccountStateAfter().equals(transactionList.get(i-1).getAccountStateBefore())){
 						Transaction new_transaction = new Transaction();
-						new_transaction.setBody("<No messages about transaction(s)>");
+						new_transaction.setBody("");
 						new_transaction.setNumber(phoneNumber);
 						new_transaction.setAccountDifferenceCurrency(AccountCurrency);
 						new_transaction.setTransanctionDate(new Date((transactionList.get(i-1).getTransanctionDate().getTime()+transactionList.get(i).getTransanctionDate().getTime())/2));
@@ -195,10 +167,11 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 						new_transaction.transanctionType=R.drawable.ic_transanction_missed;
 						new_transaction.setAccountStateBefore(transactionList.get(i).getAccountStateAfter());
 						new_transaction.setAccountStateAfter(transactionList.get(i-1).getAccountStateBefore());
+						new_transaction.calculateMissedData();
 						transactionList.add(new_transaction);
 					}
 				}
-				// Adding transanctions to view currency rates if currency differs from account currency
+				// Adding info to transanctions with foreign currency. (calculating exchange rates if it is possible).
 				if (transactionList.get(i-1).hasAccountDifference &&
 						transactionList.get(i-1).hasAccountDifferenceCurrency &&
 						transactionList.get(i).hasAccountStateAfter && 

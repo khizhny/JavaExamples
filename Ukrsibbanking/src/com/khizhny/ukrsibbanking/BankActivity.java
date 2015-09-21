@@ -59,7 +59,7 @@ public class BankActivity extends AppCompatActivity {
 	        	 DataBaseHelper myDb = new DataBaseHelper(v.getContext());
 	        	 bank.setName(nameView.getText().toString());
 	        	 bank.setPhone(phoneView.getText().toString());
-	        	 bank.setDefaultCurrency(currencyView.getSelectedItem().toString());
+	        	 bank.setDefaultCurrency(currencyView.getSelectedItem().toString().replace("\n", ""));
 	        	 myDb.addOrEditBank(bank);
 	        	 myDb.close();
 	        	 BankActivity.this.finish();

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/sub_rule_ll0"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <CheckBox
+            android:id="@+id/sub_rule_active"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:longClickable="false" />
+
+        <Spinner
+            android:id="@+id/sub_rule_parameter"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/parameter_entries"
+            android:prompt="@string/sub_rule_parameter_prompt" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/TextView02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sub_rule_method"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <Spinner
+        android:id="@+id/sub_rule_method"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/method_entries" />
+
+    <LinearLayout
+        android:id="@+id/sub_rule_left_l"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/sub_rule_left_n_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="n="
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Spinner
+            android:id="@+id/sub_rule_left_n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/n_entries" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sub_rule_phrase"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Spinner
+            android:id="@+id/sub_rule_left_phrase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sub_rule_right_l"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/sub_rule_right_n_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="n="
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Spinner
+            android:id="@+id/sub_rule_right_n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/n_entries" />
+
+        <TextView
+            android:id="@+id/TextView04"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sub_rule_phrase"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Spinner
+            android:id="@+id/sub_rule_right_phrase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sub_rule_const_l"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sub_rule_constant_value"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <EditText
+            android:id="@+id/sub_rule_constant_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:enabled="true"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sub_rule_separator_ll"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sub_rule_decimal_separator"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Spinner
+            android:id="@+id/sub_rule_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/decimal_separator" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sub_rule_trim_ll"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/TextView03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sub_rule_trim_text"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Spinner
+            android:id="@+id/sub_rule_ignore_n_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/z_entries" />
+
+        <Spinner
+            android:id="@+id/sub_rule_ignore_n_last"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/z_entries" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sub_rule_result_l"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/sub_rule_result_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sub_rule_result_value"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <EditText
+            android:id="@+id/sub_rule_result_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="text" >
+
+            <requestFocus />
+        </EditText>
+    </LinearLayout>
+</LinearLayout>

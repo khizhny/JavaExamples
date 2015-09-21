@@ -22,14 +22,14 @@ public class Rule {
 	public int wordsCount;
 	private int ruleType;
 	public boolean[] wordIsSelected; 
-	public List<SubRule> subRules;
+	public List<SubRule> subRuleList;
 	
 	Rule(int bankId, String name){
 		this.id=-1;
 		this.name=name;
 		this.bankId=bankId;
 		wordsCount=0;
-		subRules = new ArrayList <SubRule>();
+//		subRules = new ArrayList <SubRule>();
 		setRuleType(0);
 	}
 	public int getId() {
@@ -111,7 +111,7 @@ public class Rule {
 		boolean skip_wildcard=false;
 		for (int i=1; i<=wordsCount; i++){
 			if (wordIsSelected[i]){
-				mask+=delimiter+words[i-1];
+				mask+=delimiter+"\\Q"+words[i-1]+"\\E";
 				skip_wildcard=false;
 			}else{
 				if (!skip_wildcard) {

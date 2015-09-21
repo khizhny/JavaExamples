@@ -11,7 +11,27 @@
     <item>8</item>
     <item>9</item>
     <item>10</item>    
-</string-array>    
+</string-array>
+
+<string-array name="z_entries">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+    <item>6</item>
+    <item>7</item>
+    <item>8</item>
+    <item>9</item>
+    <item>10</item>    
+</string-array>       
+
+<string-array name="decimal_separator">
+    <item>.</item>
+    <item>,</item> 
+</string-array> 
+
 <string-array name="parameter_entries">
 	<item>Account state before transaction</item>
     <item>Account state after transaction</item>
@@ -19,7 +39,6 @@
     <item>Account difference (-)</item>
     <item>Transaction commission</item>
     <item>Transaction currency</item>
-    <item>Use constant Value</item>
 </string-array>  
 
 <string-array name="method_entries">

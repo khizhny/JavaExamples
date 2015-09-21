@@ -44,10 +44,15 @@
 	<string name="rule_type">Transaction type:</string>
 	<string name="sub_rule_parameters">choose parameters to extract:</string>
 	<string name="sub_rule_save">Save</string>
-	<string name="sub_rule_constant_value">Constant value:</string>
+	<string name="sub_rule_constant_value">Value:</string>
 	<string name="sub_rule_parameter_prompt">Choose parameter to extract</string>
 	<string name="sub_rule_add">Add</string>
 	<string name="rule_list_hint">To add new rule: pick active bank, click message from the list and choose \"create new rule\".</string>
+	<string name="sub_rule_method">Method:</string>
+	<string name="sub_rule_phrase">Phrase:</string>
+	<string name="sub_rule_result_value">Rusult:</string>
+	<string name="sub_rule_decimal_separator">decimal separator</string>
+	<string name="sub_rule_trim_text">Ignore n characters (first,last):</string>	
 	
 </resources>
 

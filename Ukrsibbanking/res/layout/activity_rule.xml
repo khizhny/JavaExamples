@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+<LinearLayout   
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:gravity="bottom"
     android:orientation="vertical" >
 
@@ -19,10 +22,8 @@
         android:id="@+id/rule_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
+        android:ems="10"
+        android:inputType="text" />
 
     <TextView
         android:id="@+id/extracted_parameters"
@@ -51,6 +52,13 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/rule_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/rule_next" />
+
     <TextView
         android:id="@+id/rule1_message"
         android:layout_width="wrap_content"
@@ -72,11 +80,5 @@
 
     </com.khizhny.ukrsibbanking.FlowLayout>
 
-    <Button
-        android:id="@+id/rule1_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="@string/rule_next" />
-
 </LinearLayout>
+</ScrollView>
