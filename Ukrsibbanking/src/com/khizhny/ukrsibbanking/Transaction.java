@@ -31,19 +31,15 @@ public class Transaction implements Comparable<Transaction> {
 	private String accountDifferenceCurrency;
 	private BigDecimal accountStateBefore;
 	private BigDecimal accountStateAfter;
-	private BigDecimal accountDifferencePlus;
-	private BigDecimal accountDifferenceMinus;
+	private BigDecimal accountDifference;
 	private BigDecimal currencyRate;
 	private BigDecimal comission;
-	
-	public boolean hasTransanctionDate=false;
-	public boolean hasAccountNumber=false;
-	public boolean hasCardNumber=false;
 	public boolean hasAccountStateCurrency=false;
 	public boolean hasAccountDifferenceCurrency=false;
 	public boolean hasAccountStateBefore=false;
 	public boolean hasAccountStateAfter=false;
 	public boolean hasAccountDifference=false;
+	public boolean hasTransanctionDate=false;
 	
 	//=======================================================GETs============================
 	//private String getCurrency(String s){return  s.replaceAll("[^A-Za-z]","");}
@@ -54,38 +50,62 @@ public class Transaction implements Comparable<Transaction> {
 	public BigDecimal getAccountStateBefore(){return accountStateBefore;}
 	public BigDecimal getAccountStateAfter(){return accountStateAfter;}
 	public String getAccountDifferenceCurrency(){return accountDifferenceCurrency;}
-	public BigDecimal getAccountDifferencePlus(){return accountDifferencePlus;}
+
 	public BigDecimal getCurrencyRate(){return currencyRate;}
-	public BigDecimal getAccountDifferenceMinus(){return accountDifferenceMinus;}
 	public String getTransanctionDateAsString(String transanctionDateFormat) {
 		DateFormat f = new SimpleDateFormat(transanctionDateFormat, Locale.ENGLISH);
 		return f.format(transanctionDate);		
 	}
-	public String getAccountDifferenceAsString(){
-		String rez="";
-		switch (accountDifferencePlus.signum()) {
-		case -1: 
-			rez=accountDifferencePlus.toString()+accountDifferenceCurrency;
-			break;
-		case 0: 
-			rez=accountDifferencePlus.toString()+accountDifferenceCurrency;
-			break;
-		case 1: 
-			rez="+"+accountDifferencePlus.toString()+accountDifferenceCurrency;
-			break;
+	
+	public BigDecimal getAccountDifference(){
+		return accountDifference;
 		}
-		if (!currencyRate.equals(new BigDecimal(1).setScale(3, RoundingMode.HALF_UP))) {
-			BigDecimal calculated_price = currencyRate.multiply(accountDifferencePlus,  MathContext.UNLIMITED).setScale(2, RoundingMode.HALF_UP);
-			rez+="\n("+calculated_price+accountStateCurrency+")";
-			rez+="\n(rate "+currencyRate.toString()+")";
+	public String getAccountDifferenceAsString(boolean hideCurrency,boolean inverseRate){
+		// function forms a string that will represent trnsaction difference on screen
+		String rez="";
+		if (accountStateCurrency.equals(accountDifferenceCurrency)){
+			// if transaction has native currency
+			if (accountDifference.subtract(comission).signum()==1) {
+				rez+="+";
+			}
+			rez+=accountDifference.subtract(comission).toString();		
+			if (!hideCurrency) {
+				rez+=accountDifferenceCurrency;
+			}	
+		}else
+		{   // if transaction has foreign currency
+			BigDecimal calculated_price = currencyRate.multiply(accountDifference,  MathContext.UNLIMITED).setScale(2, RoundingMode.HALF_UP);
+			if (accountDifference.signum()==1) {
+				rez+="+";
+			}
+			rez+=accountDifference.toString()+accountDifferenceCurrency;
+			rez+="\n("+calculated_price+accountStateCurrency;
+			if (!hideCurrency) {
+				rez+=accountStateCurrency;
+			}
+			rez+=")";
+			if (!inverseRate){
+				rez+="\n(rate "+currencyRate.toString()+")";
+			}else{
+				rez+="\n(rate "+(new BigDecimal(1).setScale(3)).divide(currencyRate,RoundingMode.HALF_UP).toString()+")";
+			}
+			
 		}
 		return rez;
 	}
-	public String getAccountStateBeforeAsString(){
-		return accountStateBefore.toString()+accountStateCurrency;
+	public String getAccountStateBeforeAsString(boolean hideCurrency){
+		if (!hideCurrency) {
+			return accountStateBefore.toString()+accountStateCurrency;
+		}else{
+			return accountStateBefore.toString();
+		}
 	}
-	public String getAccountStateAfterAsString(){
-		return accountStateAfter.toString()+accountStateCurrency;
+	public String getAccountStateAfterAsString(boolean hideCurrency){
+		if (!hideCurrency) {
+			return accountStateAfter.toString()+accountStateCurrency;
+		}else{
+			return accountStateAfter.toString();
+		}		
 	}
 	
 	// методы ввода сведений о транзакнции
@@ -100,7 +120,7 @@ public class Transaction implements Comparable<Transaction> {
 	}	
 	public void setTransanctionDate(Date transanctionDate) {
 		this.transanctionDate=transanctionDate;
-		this.hasTransanctionDate=true;
+		hasTransanctionDate=true;
 	}
 
 	public void setAccountStateCurrency(String accountStateCurrency) {
@@ -119,16 +139,11 @@ public class Transaction implements Comparable<Transaction> {
 		this.accountStateAfter = accountStateAfter;
 		this.hasAccountStateAfter=true;		
 	}	
-	public void setAccountDifferencePlus(BigDecimal accountDifferencePlus) {
-		this.accountDifferencePlus = accountDifferencePlus;
-		this.accountDifferenceMinus = accountDifferencePlus.negate();
+	public void setAccountDifference(BigDecimal accountDifference) {
+		this.accountDifference = accountDifference;
 		this.hasAccountDifference=true;
 	}
-	public void setAccountDifferenceMinus(BigDecimal accountDifferenceMinus) {
-		this.accountDifferenceMinus = accountDifferenceMinus;
-		this.accountDifferencePlus = accountDifferenceMinus.negate();
-		this.hasAccountDifference=true;	
-	}
+
 	public void setAccountStateBeforeFromString(String s){
 		try {
 			setAccountStateBefore(new BigDecimal(s.replace(",", ".")).setScale(2, BigDecimal.ROUND_HALF_UP));
@@ -139,16 +154,12 @@ public class Transaction implements Comparable<Transaction> {
 		setAccountStateAfter(new BigDecimal(s.replace(",", ".")).setScale(2, BigDecimal.ROUND_HALF_UP));
 		}catch (Exception e) {}		
 	}
-	public void setAccountDifferencePlusFromString(String s){				
+	public void setAccountDifferenceFromString(String s){				
 		try{
-		setAccountDifferencePlus(new BigDecimal(s.replace(",", ".")).setScale(2, BigDecimal.ROUND_HALF_UP));
+		setAccountDifference(new BigDecimal(s.replace(",", ".")).setScale(2, BigDecimal.ROUND_HALF_UP));
 		}catch (Exception e) {}
 	}
-	public void setAccountDifferenceMinusFromString(String s){
-		try {
-		setAccountDifferenceMinus(new BigDecimal(s.replace(",", ".")).setScale(2, BigDecimal.ROUND_HALF_UP));
-		}catch (Exception e) {}		
-	}
+	//=================================================Comission=============================
 	public BigDecimal getComission() {
 		return comission;
 	}
@@ -164,22 +175,21 @@ public class Transaction implements Comparable<Transaction> {
 		// Calculating accountStateAfter if possible
 		if (!hasAccountStateAfter && hasAccountStateBefore && hasAccountDifference) {
 			if (accountDifferenceCurrency.equals(accountStateCurrency)) {
-				accountStateAfter=accountStateBefore.add(accountDifferencePlus).subtract(comission);
+				accountStateAfter=accountStateBefore.add(accountDifference).subtract(comission);
 				hasAccountStateAfter=true;
 			}
 		}
 		// Calculating accountStateBefore if possible
 		if (!hasAccountStateBefore && hasAccountStateAfter && hasAccountDifference) {
 			if (accountDifferenceCurrency.equals(accountStateCurrency)) {
-				accountStateBefore=accountStateAfter.subtract(accountDifferencePlus).add(comission);
+				accountStateBefore=accountStateAfter.subtract(accountDifference).add(comission);
 				hasAccountStateBefore=true;
 			}
 		}
 		// Calculating account difference if possible
 		if (!hasAccountDifference && hasAccountStateBefore && hasAccountStateAfter) {
 			if (accountDifferenceCurrency.equals(accountStateCurrency)) {
-				accountDifferencePlus=accountStateAfter.subtract(accountStateBefore).add(comission);
-				accountDifferenceMinus= accountDifferencePlus.negate();
+				accountDifference=accountStateAfter.subtract(accountStateBefore).add(comission);
 				hasAccountDifference=true;
 			}
 		}		

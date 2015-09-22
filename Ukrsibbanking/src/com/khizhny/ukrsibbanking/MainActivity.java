@@ -82,8 +82,14 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 	 	
 		// Restore preferences	     
 	 	SharedPreferences settings =PreferenceManager.getDefaultSharedPreferences(this);
-		settings.getBoolean("hide_messages",false);
-		Boolean hide_messages= settings.getBoolean("hide_messages",false);	
+		//settings.getBoolean("hide_matched_messages",false);
+		Boolean hideMatchedMessages= settings.getBoolean("hide_matched_messages",false);
+		//settings.getBoolean("hide_not_matched_messages",false);
+		Boolean hideNotMatchedMessages= settings.getBoolean("hide_not_matched_messages",false);
+		//settings.getBoolean("hide_currency",false);
+		Boolean hideCurrency= settings.getBoolean("hide_currency",false);
+		//settings.getBoolean("inverse_rate",false);
+		Boolean inverseRate= settings.getBoolean("inverse_rate",false);
 		
 	 	transactionList = new ArrayList<Transaction>();
 		Uri uri = Uri.parse("content://sms/inbox");
@@ -93,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 		int subRuleCount;
 		Rule rule;
 		SubRule subRule;
+		boolean skipMessage;
 		int msgCount=c.getCount();
 		if(c.moveToFirst()) {
 			for(int ii=0; ii < msgCount; ii++) {
@@ -101,44 +108,55 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 				Transaction sms = new Transaction();
 				sms.accountStateCurrency=AccountCurrency;
 				sms.setTransanctionDate(new Date(c.getLong(c.getColumnIndexOrThrow("date"))));
+				sms_body=sms_body.replace("'", "").replace("\n", " ");
 				sms.setBody(sms_body);
 				sms.setNumber(phoneNumber);
 				sms.setAccountDifferenceCurrency(AccountCurrency);
+				skipMessage=false;
 				for (int i=0; i<rule_count;i++){
 					rule=ruleList.get(i);
-					if (sms_body.matches(rule.getMask())) {							
-						sms.transanctionType=ruleList.get(i).getRuleTypeDrawable();
-						subRuleCount=rule.subRuleList.size();
-						for (int j=0; j<subRuleCount; j++){
-							subRule=rule.subRuleList.get(j);
-							switch (subRule.getExtractedParameter()){
-							case 0 : //Account state before transaction
-								sms.setAccountStateBeforeFromString(subRule.applySubRule(sms_body, false));
-								break;
-							case 1 : //Account state after transaction
-								sms.setAccountStateAfterFromString(subRule.applySubRule(sms_body, false));
-								break;
-							case 2 : //Account difference (+)
-								sms.setAccountDifferencePlusFromString(subRule.applySubRule(sms_body, false));
-								break;
-							case 3 : //Account difference (-)
-								sms.setAccountDifferenceMinusFromString(subRule.applySubRule(sms_body, false));
-								break;
-							case 4 : //Transaction commission
-								sms.setComissionFromString(subRule.applySubRule(sms_body, false));
-								break;
-							case 5 : //Transaction currency
-								sms.setAccountDifferenceCurrency(subRule.applySubRule(sms_body, true));
-								break;
+					if (sms_body.matches(rule.getMask()) && !skipMessage) {
+						if (rule.getRuleType()!=8) {// not Ignore type
+							sms.transanctionType=ruleList.get(i).getRuleTypeDrawable();
+							subRuleCount=rule.subRuleList.size();
+							for (int j=0; j<subRuleCount; j++){
+								subRule=rule.subRuleList.get(j);
+								switch (subRule.getExtractedParameter()){
+								case 0 : //Account state before transaction
+									sms.setAccountStateBeforeFromString(subRule.applySubRule(sms_body, false));
+									break;
+								case 1 : //Account state after transaction
+									sms.setAccountStateAfterFromString(subRule.applySubRule(sms_body, false));
+									break;
+								case 2 : //Account difference
+									sms.setAccountDifferenceFromString(subRule.applySubRule(sms_body, false));
+									break;
+								case 3 : //Transaction commission
+									sms.setComissionFromString(subRule.applySubRule(sms_body, false));
+									break;
+								case 4 : //Transaction currency
+									sms.setAccountDifferenceCurrency(subRule.applySubRule(sms_body, true));
+									break;
+								}								
 							}
-							
+							ruleWasApplied=true;					
+						}else{
+							skipMessage=true;
 						}
-						ruleWasApplied=true;
 					}
 				}
-				if (ruleWasApplied || !hide_messages) {
-					sms.calculateMissedData();
-					transactionList.add(sms);
+				if (!skipMessage) {
+					if (ruleWasApplied){
+						if (!hideMatchedMessages){
+							sms.calculateMissedData();
+							transactionList.add(sms);
+						}					
+					}else{
+						if (!hideNotMatchedMessages) {
+							sms.calculateMissedData();
+							transactionList.add(sms);
+						}
+					}
 				}
 				c.moveToNext();
 			}
@@ -177,11 +195,15 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 						transactionList.get(i).hasAccountStateAfter && 
 						transactionList.get(i-1).hasAccountStateAfter) {
 					if (!transactionList.get(i-1).getAccountDifferenceCurrency().equals(AccountCurrency) &&
-							transactionList.get(i-1).getAccountDifferencePlus().signum()!=0)	{							
+							transactionList.get(i-1).getAccountDifference().signum()!=0)	{							
 						 //smsList.get(i-1).setCurrencyRate((smsList.get(i).getAccountStateAfter().subtract(smsList.get(i-1).getAccountStateAfter()).divide(smsList.get(i-1).getAccountDifferenceMinus())));
 						BigDecimal uah_price= transactionList.get(i).getAccountStateAfter().subtract(transactionList.get(i-1).getAccountStateAfter());
-						BigDecimal rate = uah_price.divide(transactionList.get(i-1).getAccountDifferenceMinus(),3,RoundingMode.HALF_UP);
+						BigDecimal rate = uah_price.divide(transactionList.get(i-1).getAccountDifference().negate(),3,RoundingMode.HALF_UP);
 						transactionList.get(i-1).setCurrencyRate(rate);
+						
+						if (!transactionList.get(i-1).hasAccountStateBefore) {
+							transactionList.get(i-1).setAccountStateBefore(transactionList.get(i).getAccountStateAfter());
+						}
 					}
 				}
 			}
@@ -189,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 		}
 		
 		// Set smsList in the ListAdapter
-		listView.setAdapter(new TransanctionListAdapter(this,transactionList));
+		listView.setAdapter(new TransanctionListAdapter(this,transactionList,hideCurrency,inverseRate));
     }
 
 

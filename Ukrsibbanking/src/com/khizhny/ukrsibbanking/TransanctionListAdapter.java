@@ -15,11 +15,15 @@ public class TransanctionListAdapter extends ArrayAdapter<Transaction> {
 
     private final Context context;
     private final List<Transaction> smsList;
+	private boolean hideCurrency;
+	private boolean inverseRate;
 	
-	public TransanctionListAdapter(Context context, List<Transaction> smsList) {
+	public TransanctionListAdapter(Context context, List<Transaction> smsList, boolean hideCurrency,boolean inverseRate) {
 		super(context, R.layout.activity_main_list_row, smsList);
 		this.context = context;
 		this.smsList = smsList;
+		this.hideCurrency=hideCurrency;
+		this.inverseRate=inverseRate;
 	}
 
 	@Override
@@ -42,7 +46,7 @@ public class TransanctionListAdapter extends ArrayAdapter<Transaction> {
         
         TextView accountBeforeView = (TextView) rowView.findViewById(R.id.accountBefore);
         if (smsList.get(position).hasAccountStateBefore){
-        	accountBeforeView.setText(smsList.get(position).getAccountStateBeforeAsString());
+        	accountBeforeView.setText(smsList.get(position).getAccountStateBeforeAsString(hideCurrency));
         } else {
         	accountBeforeView.setText("");
         }
@@ -54,15 +58,15 @@ public class TransanctionListAdapter extends ArrayAdapter<Transaction> {
         }
         TextView accountAfterView = (TextView) rowView.findViewById(R.id.accountAfter);
         if (smsList.get(position).hasAccountStateAfter){
-	        accountAfterView.setText(smsList.get(position).getAccountStateAfterAsString());
+	        accountAfterView.setText(smsList.get(position).getAccountStateAfterAsString(hideCurrency));
         }else {
         	accountAfterView.setText("");
         }
         
         TextView accountDifferenceView = (TextView) rowView.findViewById(R.id.accountDifference);
         if (smsList.get(position).hasAccountDifference){        	
-        	accountDifferenceView.setText(smsList.get(position).getAccountDifferenceAsString());
-	        switch (smsList.get(position).getAccountDifferencePlus().signum()) {
+        	accountDifferenceView.setText(smsList.get(position).getAccountDifferenceAsString(hideCurrency,inverseRate));
+	        switch (smsList.get(position).getAccountDifference().signum()) {
 	        	case -1:
 	        		accountDifferenceView.setTextColor(Color.RED);     
 	        		break;

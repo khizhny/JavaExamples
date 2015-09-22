@@ -6,9 +6,24 @@
     <PreferenceCategory 
         android:title="Common settings">
         <CheckBoxPreference
-			 	android:key="hide_messages"
-			 	android:summary="Check to hide messages with no rule applied."
-			 	android:title="Show only matched messages.">
+			 	android:key="hide_matched_messages"
+			 	android:title="Hide matched messages."
+			 	android:summary="Check to hide messages with rule applied.">			 	
 		</CheckBoxPreference>
-    </PreferenceCategory>
+        <CheckBoxPreference
+			 	android:key="hide_not_matched_messages"
+			 	android:title="Hide not matched messages."
+			 	android:summary="Check to hide messages with no rule applied.">			 	
+		</CheckBoxPreference>
+        <CheckBoxPreference
+			 	android:key="hide_currency"
+			 	android:title="Hide currency name"
+			 	android:summary="All values in your current bank account currency will not be displayed.">
+		</CheckBoxPreference>
+        <CheckBoxPreference
+			 	android:key="inverse_rate"
+			 	android:title="Inverse currency rates"
+			 	android:summary="Changes USD/EUR to EUR/USD">
+		</CheckBoxPreference>        
+        </PreferenceCategory>
 </PreferenceScreen>

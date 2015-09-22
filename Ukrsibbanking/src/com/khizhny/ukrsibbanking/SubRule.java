@@ -1,5 +1,11 @@
 package com.khizhny.ukrsibbanking;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+import android.util.Log;
+import android.widget.Toast;
+
 public class SubRule {
 	private int id;
 	private int ruleId;
@@ -14,6 +20,7 @@ public class SubRule {
 	private String separator;
 	private int trimLeft;
 	private int trimRight;
+	private boolean negate;
 	
 	SubRule(int ruleId){
 		this.ruleId=ruleId;
@@ -27,6 +34,7 @@ public class SubRule {
 		trimLeft=0;
 		trimRight=0;
 		constantValue="0";
+		negate=false;
 	}
 	
 	public int getId() {
@@ -122,39 +130,55 @@ public class SubRule {
 		try{
 			switch (extractionMethod) {
 			case 0:  // n-th word after Left Phrase
-				temp= msg.split(leftPhrase)[1].split(" ")[distanceToLeftPhrase];
+				temp= msg.split("\\Q"+leftPhrase+"\\E")[1].split(" ")[distanceToLeftPhrase];
 				break;
 			case 1: // n-th word before Right Phrase
-				temp = msg.split(rightPhrase)[0];
+				temp = msg.split("\\Q"+rightPhrase+"\\E")[0];
 				String[] arr=temp.split(" ");
 				int wordsCount = arr.length; 
 				temp=(arr[wordsCount-distanceToRightPhrase]);
 				break;
 			case 2:// all words between Phrases
-				temp=msg.split(leftPhrase)[1].split(rightPhrase)[0];
+				temp=msg.split("\\Q"+leftPhrase+"\\E")[1].split("\\Q"+rightPhrase+"\\E")[0];
 				break;
 			case 3: // const
 				temp=constantValue;
 			}
 		}
 		catch (Exception e){
-			 temp="error";
+			return "error";
 		}
 		// trimming characters if needed
 		if (trimRight>0 || trimLeft>0){
 			int temp_len=temp.length();
 			temp=temp.substring(trimLeft, temp_len-trimRight-1);
 		}	
-		
+	
 		if (isText) {  // return only text
 			return temp.replaceAll("[^A-Za-z]", "");
 		} else
 		{ // return only Numbers
 			try {
-			return temp.replaceAll("[^0-9"+separator+"]", "");
+				// changing sign if needed
+				if (negate){
+					if (temp.indexOf("-")==-1){
+						temp="-"+temp;
+					}else{
+						temp=temp.replace("-", "");
+					}
+				}
+				return temp.replaceAll("[^0-9"+separator+"-]", "");
 			}catch (Exception e){
 				return "0";
 			}
 		}			
+	}
+
+	public boolean isNegate() {
+		return negate;
+	}
+
+	public void setNegate(boolean negate) {
+		this.negate = negate;
 	}
 }

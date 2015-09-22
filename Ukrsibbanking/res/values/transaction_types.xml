@@ -9,5 +9,6 @@
 	<item>Payed</item>
 	<item>Failed</item>
 	<item>Missed</item>
+	<item>Ignore</item>
 </string-array>
 </resources>

@@ -12,7 +12,8 @@ public class Rule {
 			R.drawable.ic_transanction_transfer_from,
 			R.drawable.ic_transanction_pay,
 			R.drawable.ic_transanction_failed,
-			R.drawable.ic_transanction_missed
+			R.drawable.ic_transanction_missed,
+			R.drawable.ic_transanction_failed // ignore
 			};
 	private int id;
 	private int bankId;

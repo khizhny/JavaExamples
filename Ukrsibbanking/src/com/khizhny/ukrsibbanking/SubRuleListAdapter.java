@@ -32,8 +32,10 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
     private TextView ResultView;
     public Rule rule;
     private Spinner SeparatorView;
+    private CheckBox NegateView;
     private Spinner IgnoreNLeftView;
     private Spinner IgnoreNRightView;
+    private boolean doNotDoEvents;
 	
 	public SubRuleListAdapter(Context context, List<SubRule> subRuleList) {
 		super(context, R.layout.activity_sub_rule_list_row, subRuleList);
@@ -49,7 +51,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
 		}
 		SubRule sr=subRuleList.get(position);
 		
-		//this.listView=(ListView) rowView.getParent();
+		doNotDoEvents=true;
 		
         //========================================================================================
 		ActiveView=(CheckBox) rowView.findViewById(R.id.sub_rule_active);
@@ -68,6 +70,18 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
 				   }				   
 			   }
 			  } );
+        //========================================================================================
+		NegateView=(CheckBox) rowView.findViewById(R.id.sub_rule_negate);
+		NegateView.setChecked(sr.isNegate());
+		NegateView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			   @Override
+			   public void onCheckedChanged(CompoundButton v, boolean isChecked) {
+				   if (!doNotDoEvents && isChecked!=subRuleList.get(position).isNegate()) {
+					   subRuleList.get(position).setNegate(isChecked);
+					   notifyDataSetChanged();
+				   }				   
+			   }
+			  });
 		
         //========================================================================================
 		ParameterView = (Spinner) rowView.findViewById(R.id.sub_rule_parameter);
@@ -75,7 +89,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
 		ParameterView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
-            	if (subRuleList.get(position).getExtractedParameter()!=selectedPosition) {
+            	if (!doNotDoEvents && subRuleList.get(position).getExtractedParameter()!=selectedPosition) {
             		subRuleList.get(position).setExtractedParameter(selectedPosition);
             		notifyDataSetChanged();
             	}            	
@@ -90,7 +104,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
 		MethodView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
-            	if (subRuleList.get(position).getExtractionMethod()!=selectedPosition) {
+            	if (!doNotDoEvents && subRuleList.get(position).getExtractionMethod()!=selectedPosition) {
             		subRuleList.get(position).setExtractionMethod(selectedPosition);
             		notifyDataSetChanged();
             	}
@@ -105,7 +119,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
 		LeftNView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
-            	if ((selectedPosition+1)!=subRuleList.get(position).getDistanceToLeftPhrase()){
+            	if (!doNotDoEvents &&(selectedPosition+1)!=subRuleList.get(position).getDistanceToLeftPhrase()){
             		subRuleList.get(position).setDistanceToLeftPhrase(selectedPosition+1);
                 	notifyDataSetChanged();
             	}            	
@@ -120,7 +134,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
 		RightNView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
-            	if ((selectedPosition+1)!=subRuleList.get(position).getDistanceToRightPhrase()){
+            	if (!doNotDoEvents &&(selectedPosition+1)!=subRuleList.get(position).getDistanceToRightPhrase()){
             		subRuleList.get(position).setDistanceToRightPhrase(selectedPosition+1);
                 	notifyDataSetChanged();
             	} 
@@ -139,7 +153,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
         LeftPhraseView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
-            	if (!SubRuleListActivity.phrases.get(selectedPosition).equals(subRuleList.get(position).getLeftPhrase())){
+            	if (!doNotDoEvents && !SubRuleListActivity.phrases.get(selectedPosition).equals(subRuleList.get(position).getLeftPhrase())){
             		subRuleList.get(position).setLeftPhrase(SubRuleListActivity.phrases.get(selectedPosition));
                 	notifyDataSetChanged();
             	}            	
@@ -155,7 +169,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
         RightPhraseView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
-            	if (!SubRuleListActivity.phrases.get(selectedPosition).equals(subRuleList.get(position).getRightPhrase())){
+            	if (!doNotDoEvents && !SubRuleListActivity.phrases.get(selectedPosition).equals(subRuleList.get(position).getRightPhrase())){
             		subRuleList.get(position).setRightPhrase(SubRuleListActivity.phrases.get(selectedPosition));
                 	notifyDataSetChanged();
             	}
@@ -166,7 +180,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
         
         //========================================================================================
         ConstantView = (TextView) rowView.findViewById(R.id.sub_rule_constant_value);
-        if (subRuleList.get(position).getExtractionMethod()==3) {
+        if (sr.getExtractionMethod()==3) {
         	ConstantView.setText(sr.getConstantValue());
         }else{
         	ConstantView.setText("");
@@ -193,7 +207,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
         
         //========================================================================================
         ResultView=(TextView) rowView.findViewById(R.id.sub_rule_result_value);
-        if (sr.getExtractedParameter()==5) { //Transaction currency (text parameter)
+        if (sr.getExtractedParameter()==4) { //Transaction currency (text parameter)
         	ResultView.setText(sr.applySubRule(rule.getSmsBody(),true));
         } else { // other parameters (numeric)
         	ResultView.setText(sr.applySubRule(rule.getSmsBody(),false));
@@ -201,7 +215,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
         
         //========================================================================================
         SeparatorView=(Spinner) rowView.findViewById(R.id.sub_rule_separator);
-        SeparatorView.setSelection(subRuleList.get(position).getDecimalSeparator());
+        SeparatorView.setSelection(sr.getDecimalSeparator());
         SeparatorView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
@@ -216,7 +230,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
         
         //========================================================================================
         IgnoreNLeftView=(Spinner) rowView.findViewById(R.id.sub_rule_ignore_n_first);
-        IgnoreNLeftView.setSelection(subRuleList.get(position).getTrimLeft());
+        IgnoreNLeftView.setSelection(sr.getTrimLeft());
         IgnoreNLeftView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
@@ -231,7 +245,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
         
         //========================================================================================
         IgnoreNRightView=(Spinner) rowView.findViewById(R.id.sub_rule_ignore_n_last);
-        IgnoreNRightView.setSelection(subRuleList.get(position).getTrimRight());
+        IgnoreNRightView.setSelection(sr.getTrimRight());
         IgnoreNRightView.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedPosition, long id) {
@@ -246,7 +260,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
         
         
         // hiding unused views depending on used method
-    	switch (subRuleList.get(position).getExtractionMethod()){
+    	switch (sr.getExtractionMethod()){
 			case 0: // n-th word after Phrase
 				rowView.findViewById(R.id.sub_rule_left_l).setVisibility(View.VISIBLE);
 				rowView.findViewById(R.id.sub_rule_right_l).setVisibility(View.GONE);
@@ -284,6 +298,7 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
 				rowView.findViewById(R.id.sub_rule_const_l).setVisibility(View.VISIBLE);
 				break;
     	}
+    	doNotDoEvents=false;
       return rowView;
 	}
 	

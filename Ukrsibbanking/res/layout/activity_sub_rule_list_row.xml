@@ -153,6 +153,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/decimal_separator" />
+
+        <CheckBox
+            android:id="@+id/sub_rule_negate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Negate" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -182,6 +189,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:entries="@array/z_entries" />
+
     </LinearLayout>
 
     <LinearLayout

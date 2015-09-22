@@ -35,8 +35,7 @@
 <string-array name="parameter_entries">
 	<item>Account state before transaction</item>
     <item>Account state after transaction</item>
-    <item>Account difference (+)</item>
-    <item>Account difference (-)</item>
+    <item>Account difference</item>
     <item>Transaction commission</item>
     <item>Transaction currency</item>
 </string-array>  

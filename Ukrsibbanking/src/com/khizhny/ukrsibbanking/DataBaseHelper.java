@@ -24,7 +24,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
      private static  String DB_PATH;
      private static String DB_NAME = "database.db";
   // increment dbLastVersion if db structure is changing. Also increment  "version.version" field in DB.
-     private static int dbLastVersion=3;  
+     private static int dbLastVersion=4;  
      
      private SQLiteDatabase myDataBase; 
      private final Context myContext;
@@ -315,7 +315,7 @@ public void setActiveAnyBank () {
    }
 	public List<SubRule> getSubRules(int ruleId){
 		 List<SubRule> subRuleList = new ArrayList<SubRule>();
-		 String selectQuery = "SELECT _id, left_phrase,right_phrase, distance_to_left_phrase, distance_to_right_phrase, constant_value, extracted_parameter,extraction_method,decimal_separator,trim_left,trim_right  FROM subrules WHERE rule_id="+ruleId;
+		 String selectQuery = "SELECT _id, left_phrase,right_phrase, distance_to_left_phrase, distance_to_right_phrase, constant_value, extracted_parameter,extraction_method,decimal_separator,trim_left,trim_right,negate  FROM subrules WHERE rule_id="+ruleId;
 		 SQLiteDatabase db = this.getWritableDatabase();
 	     Cursor cursor = db.rawQuery(selectQuery, null);
 	     // looping through all rows and adding to list
@@ -333,6 +333,11 @@ public void setActiveAnyBank () {
                r.setDecimalSeparator(cursor.getInt(8));
                r.setTrimLeft(cursor.getInt(9));
                r.setTrimRight(cursor.getInt(10));
+               if (cursor.getInt(11)==0) {
+            	   r.setNegate(false);
+               } else {
+            	   r.setNegate(true);
+               }               
                // Adding contact to list
                subRuleList.add(r);
            } while (cursor.moveToNext());
@@ -353,11 +358,12 @@ public void setActiveAnyBank () {
 		int decimalSeparator = sr.getDecimalSeparator();
 		int trimLeft = sr.getTrimLeft();
 		int trimRight = sr.getTrimRight();
-		
+		int negate = 0;
+		if (sr.isNegate()) negate=-1; 
 		if (id<0){
 			// Adding new SubRule
-			db.execSQL("INSERT INTO subrules (rule_id,left_phrase,right_phrase,distance_to_left_phrase,distance_to_right_phrase,constant_value,extracted_parameter,extraction_method,decimal_separator,trim_left,trim_right) "
-					+ "VALUES("+ruleId+",'"+LeftPhrase+"','"+RightPhrase+"',"+leftN+","+rightN+",'"+constanValue+"',"+extractionParameter+","+extractionMethod+","+decimalSeparator+","+trimLeft+","+trimRight+")");
+			db.execSQL("INSERT INTO subrules (rule_id,left_phrase,right_phrase,distance_to_left_phrase,distance_to_right_phrase,constant_value,extracted_parameter,extraction_method,decimal_separator,trim_left,trim_right,negate) "
+					+ "VALUES("+ruleId+",'"+LeftPhrase+"','"+RightPhrase+"',"+leftN+","+rightN+",'"+constanValue+"',"+extractionParameter+","+extractionMethod+","+decimalSeparator+","+trimLeft+","+trimRight+","+negate+")");
 			Cursor c=db.rawQuery("SELECT MAX(_id) FROM subrules",null);
 			if (c.moveToFirst()) {
 				id= c.getInt(0);
@@ -375,7 +381,8 @@ public void setActiveAnyBank () {
 					+"extraction_method="+extractionMethod+","
 					+"decimal_separator="+decimalSeparator+","
 					+"trim_left="+trimLeft+","
-					+"trim_right="+trimRight
+					+"trim_right="+trimRight+","
+					+"negate="+negate
 					+" WHERE _id="+id);
 		}
 		return id;
