@@ -79,7 +79,7 @@ public class Transaction implements Comparable<Transaction> {
 				rez+="+";
 			}
 			rez+=accountDifference.toString()+accountDifferenceCurrency;
-			rez+="\n("+calculated_price+accountStateCurrency;
+			rez+="\n("+calculated_price;
 			if (!hideCurrency) {
 				rez+=accountStateCurrency;
 			}

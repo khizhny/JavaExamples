@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 	 	transactionList = new ArrayList<Transaction>();
 		Uri uri = Uri.parse("content://sms/inbox");
 		Cursor c= getContentResolver().query(uri, null, "address='" + phoneNumber+"'" ,null,"date DESC");
+		//Cursor c= getContentResolver().query(uri, null, null,null,"date DESC");
 		String sms_body;
 		boolean ruleWasApplied;
 		int subRuleCount;
