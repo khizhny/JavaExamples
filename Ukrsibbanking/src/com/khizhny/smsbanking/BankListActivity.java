@@ -1,4 +1,4 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-
 import java.util.ArrayList;
 import java.util.List;
 

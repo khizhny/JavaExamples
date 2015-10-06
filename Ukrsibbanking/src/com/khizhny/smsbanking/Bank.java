@@ -1,4 +1,4 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 
 
 public class Bank {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Ukrsibbanking</string>
+    <string name="app_name">SMS banking</string>
     <string name="SMS_TEXT">SMS TEXT</string>
     
     <string name="action_bank_list">Manage Banks</string>

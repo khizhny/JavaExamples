@@ -1,4 +1,4 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import android.util.Log;
 public class DataBaseHelper extends SQLiteOpenHelper{
 	 
     //The Android's default system path of your application database.
-     //private static String DB_PATH = "/data/data/com.khizhny.ukrsibbanking/databases/";
+     //private static String DB_PATH = "/data/data/com.khizhny.smsbanking/databases/";
      private static  String DB_PATH;
      private static String DB_NAME = "database.db";
   // increment dbLastVersion if db structure is changing. Also increment  "version.version" field in DB.

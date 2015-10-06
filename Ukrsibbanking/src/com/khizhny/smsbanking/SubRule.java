@@ -1,8 +1,7 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
 import android.util.Log;
 import android.widget.Toast;
 

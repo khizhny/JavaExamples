@@ -1,4 +1,4 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 
 import android.content.Context;
 import android.content.res.TypedArray;

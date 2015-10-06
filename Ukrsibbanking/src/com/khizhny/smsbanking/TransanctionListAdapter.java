@@ -1,7 +1,6 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 
 import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -62,6 +61,10 @@ public class TransanctionListAdapter extends ArrayAdapter<Transaction> {
         }else {
         	accountAfterView.setText("");
         }
+        
+        TextView accountComissionView = (TextView) rowView.findViewById(R.id.accountComission);
+        accountComissionView.setText(smsList.get(position).getComissionAsString(hideCurrency));
+        accountComissionView.setTextColor(Color.rgb(218, 48, 192)); //pink
         
         TextView accountDifferenceView = (TextView) rowView.findViewById(R.id.accountDifference);
         if (smsList.get(position).hasAccountDifference){        	

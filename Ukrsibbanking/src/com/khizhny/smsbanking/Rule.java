@@ -1,8 +1,7 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class Rule {
 	public static int[] ruleTypes={
 			R.drawable.ic_transanction_unknown,

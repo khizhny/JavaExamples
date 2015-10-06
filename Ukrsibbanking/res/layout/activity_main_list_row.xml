@@ -33,7 +33,7 @@
     <LinearLayout
         android:id="@+id/sub_rule_ll0"
         android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginRight="10dp"
         android:gravity="center_vertical"
         android:orientation="vertical" >
@@ -54,7 +54,14 @@
             android:layout_weight="1"
             android:gravity="right|center"
             android:textStyle="bold" />
-
+        <TextView
+            android:id="@+id/accountComission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center"
+            android:layout_weight="1"
+            android:gravity="right|center"
+            android:textStyle="bold" />
         <TextView
             android:id="@+id/accountBefore"
             android:layout_width="wrap_content"

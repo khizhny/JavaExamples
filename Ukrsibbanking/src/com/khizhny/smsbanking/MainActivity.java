@@ -1,4 +1,4 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import com.khizhny.smsbanking.Transaction;
 
-import com.khizhny.ukrsibbanking.Transaction;
 public class MainActivity extends AppCompatActivity implements OnMenuItemClickListener{
 
 	public List<Bank> bankList;
@@ -191,14 +191,21 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 					}
 				}
 				// Adding info to transanctions with foreign currency. (calculating exchange rates if it is possible).
+				
+				// transaction (i-1) - current transaction
+				// transaction (i) - previouse transaction
 				if (transactionList.get(i-1).hasAccountDifference &&
 						transactionList.get(i-1).hasAccountDifferenceCurrency &&
 						transactionList.get(i).hasAccountStateAfter && 
 						transactionList.get(i-1).hasAccountStateAfter) {
 					if (!transactionList.get(i-1).getAccountDifferenceCurrency().equals(AccountCurrency) &&
 							transactionList.get(i-1).getAccountDifference().signum()!=0)	{							
-						 //smsList.get(i-1).setCurrencyRate((smsList.get(i).getAccountStateAfter().subtract(smsList.get(i-1).getAccountStateAfter()).divide(smsList.get(i-1).getAccountDifferenceMinus())));
+						//smsList.get(i-1).setCurrencyRate((smsList.get(i).getAccountStateAfter().subtract(smsList.get(i-1).getAccountStateAfter()).divide(smsList.get(i-1).getAccountDifferenceMinus())));
+						// calculating price in native currency
 						BigDecimal uah_price= transactionList.get(i).getAccountStateAfter().subtract(transactionList.get(i-1).getAccountStateAfter());
+						// do not taking comission into account
+						uah_price=uah_price.add(transactionList.get(i-1).getComission());
+						// exchange rate
 						BigDecimal rate = uah_price.divide(transactionList.get(i-1).getAccountDifference().negate(),3,RoundingMode.HALF_UP);
 						transactionList.get(i-1).setCurrencyRate(rate);
 						

@@ -1,4 +1,4 @@
-package com.khizhny.ukrsibbanking;
+package com.khizhny.smsbanking;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -171,6 +171,20 @@ public class Transaction implements Comparable<Transaction> {
 			this.comission = new BigDecimal(comission.replace(",", ".")).setScale(2, BigDecimal.ROUND_HALF_UP);
 		}catch (Exception e) {}		
 	}
+	public String getComissionAsString(boolean hideCurrency){
+		if (comission.signum()!=0) 
+		{
+			if (!hideCurrency) {
+				return comission.toString()+accountStateCurrency;
+			}else{
+				return comission.toString();
+			}
+		}else{
+			return "";
+		}
+		
+	}
+	
 	public void calculateMissedData(){
 		// Calculating accountStateAfter if possible
 		if (!hasAccountStateAfter && hasAccountStateBefore && hasAccountDifference) {
