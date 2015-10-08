@@ -1,5 +1,6 @@
 package com.khizhny.smsbanking;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -14,8 +15,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnMenuItemClickListener;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,7 +25,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import com.khizhny.smsbanking.Transaction;
 
 public class MainActivity extends AppCompatActivity implements OnMenuItemClickListener{
 
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_preferences) {
-			Intent intent = new Intent(this, PreferencesActivity.class);
+			Intent intent = new Intent(this, PrefActivity.class);
 		    startActivity(intent);
 			return true;
 		}
@@ -254,6 +254,21 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
 		if (id == R.id.action_quit) {
 			this.finish();
 			System.exit(0);			
+			return true;
+		}
+		if (id == R.id.action_rate_app) {
+			Uri uri = Uri.parse("market://details?id=" + getPackageName());
+		    Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+		    // To count with Play market backstack, After pressing back button, 
+		    // to taken back to our application, we need to add following flags to intent. 
+		    goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+		                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+		    try {
+		        startActivity(goToMarket);
+		    } catch (ActivityNotFoundException e) {
+		        startActivity(new Intent(Intent.ACTION_VIEW,
+		        Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
+		    }
 			return true;
 		}
 

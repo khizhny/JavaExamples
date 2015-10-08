@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.khizhny.smsbanking"
-    android:versionCode="1"
-    android:versionName="1.0" 
+    android:versionCode="2"
+    android:versionName="1.1" 
     android:installLocation="auto">
-
+    <supports-screens
+		android:largeScreens="true"
+    	android:xlargeScreens="true"/>
+        
+	<uses-feature 
+	    android:name="android.hardware.telephony" 
+	    android:required="true" />
+	
     <uses-sdk
         android:minSdkVersion="7"
         android:targetSdkVersion="23" />
@@ -35,7 +42,7 @@
 			android:windowSoftInputMode="stateHidden"/>
         <activity android:name="com.khizhny.smsbanking.BankActivity" android:label="@string/action_bank_text"
             android:windowSoftInputMode="stateHidden"/>
-        <activity android:name="com.khizhny.smsbanking.PreferencesActivity" android:label="@string/action_preferences"></activity>
+        <activity android:name="com.khizhny.smsbanking.PrefActivity" android:label="@string/action_preferences"></activity>
     </application>
 </manifest>
 

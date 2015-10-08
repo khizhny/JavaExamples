@@ -23,11 +23,12 @@ public class RuleListAdapter extends ArrayAdapter<Rule> {
 	}
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View rowView = convertView;
-		if (rowView == null) {
+		View rowView;
+		//rowView = convertView;
+		//if (rowView == null) {
 			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			rowView = vi.inflate(R.layout.activity_rule_list_row, parent, false);
-		}
+	//	}
 
 		ruleNameView = (TextView) rowView.findViewById(R.id.ruleName);
         ruleNameView.setText(ruleList.get(position).getName());

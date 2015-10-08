@@ -44,15 +44,15 @@ public class SubRuleListAdapter extends ArrayAdapter<SubRule> {
 	}
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		View rowView = convertView;
-		if (rowView == null) {
+		View rowView;
+		//View rowView= convertView;
+		//if (rowView == null) {
 			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			rowView = vi.inflate(R.layout.activity_sub_rule_list_row, parent, false);
-		}
+		//}
 		SubRule sr=subRuleList.get(position);
 		
-		doNotDoEvents=true;
-		
+		doNotDoEvents=true;		
         //========================================================================================
 		ActiveView=(CheckBox) rowView.findViewById(R.id.sub_rule_active);
 		ActiveView.setChecked(true);
