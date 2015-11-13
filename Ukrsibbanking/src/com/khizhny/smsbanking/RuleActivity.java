@@ -1,10 +1,14 @@
 package com.khizhny.smsbanking;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -12,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,8 +24,50 @@ public class RuleActivity extends AppCompatActivity {
 	private Rule rule;
 	private Bank bank;
 	private TextView ruleNameView;
-	private Spinner ruleTypeView;
+	private android.support.v7.widget.AppCompatSpinner ruleTypeView;
 	private ImageView imageView;
+	
+/*	public static int getBackgroundColor(View view) {
+		ColorDrawable colorDrawable = (ColorDrawable) view.getBackground();
+        //ColorDrawable colorDrawable = (ColorDrawable) drawable;
+        if (Build.VERSION.SDK_INT >= 11) {
+            return colorDrawable.getColor();
+        }
+        try {
+            Field field = colorDrawable.getClass().getDeclaredField("mState");
+            field.setAccessible(true);
+            Object object = field.get(colorDrawable);
+            field = object.getClass().getDeclaredField("mUseColor");
+            field.setAccessible(true);
+            return field.getInt(object);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+	public static void setBackgroundColor(View view, int color) {
+        Drawable drawable = view.getBackground();
+        if (drawable instanceof ColorDrawable) {
+            ColorDrawable colorDrawable = (ColorDrawable) drawable;
+            if (Build.VERSION.SDK_INT >= 11) {
+                colorDrawable.setColor(color);
+            }
+            try {
+                Field field = colorDrawable.getClass().getDeclaredField("mState");
+                field.setAccessible(true);
+                Object object = field.get(colorDrawable);
+                field = object.getClass().getDeclaredField("mUseColor");
+                field.setAccessible(true);
+                field.setInt(object,color);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }/**/
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {		
@@ -50,7 +95,7 @@ public class RuleActivity extends AppCompatActivity {
 		ruleNameView =  (TextView) this.findViewById(R.id.rule_name);
 		ruleNameView.setText(rule.getName());
        
-		ruleTypeView = (Spinner) this.findViewById(R.id.transaction_type);
+		ruleTypeView = (android.support.v7.widget.AppCompatSpinner) this.findViewById(R.id.transaction_type);
 		ruleTypeView.setSelection(rule.getRuleType());
 		ruleTypeView.setOnItemSelectedListener(new OnItemSelectedListener()
 	       {
@@ -77,6 +122,7 @@ public class RuleActivity extends AppCompatActivity {
 	    W = new Button(this);
 	    W.setText("<BEGIN>");
 	    W.setBackgroundColor(Color.GRAY);
+	    // RuleActivity.setBackgroundColor(W,Color.GRAY);
 	    wordButtons.add(W);
 	    myLayout.addView(W);
 	   
@@ -84,17 +130,21 @@ public class RuleActivity extends AppCompatActivity {
 		   W=new Button(this);
 		   W.setText(words[i-1]);
 		   W.setBackgroundColor(Color.LTGRAY);
+		   //RuleActivity.setBackgroundColor(W,Color.LTGRAY);		   
 		   W.setOnClickListener(new View.OnClickListener() {
 			     public void onClick(View v) {			    	 
 			    	 ColorDrawable buttonColor = (ColorDrawable) v.getBackground();
+			    	 //int intButtonColor = RuleActivity.getBackgroundColor(v);
 			    	 int wordIndex=wordButtons.indexOf(v);			    	 
 					 if (buttonColor.getColor() == Color.GRAY) {
 						v.setBackgroundColor(Color.LTGRAY);
+						// RuleActivity.setBackgroundColor(v,Color.LTGRAY);
 						rule.deSelectWord(wordIndex);
 					 } 
 					 else 
 					 {
 						v.setBackgroundColor(Color.GRAY);
+						//RuleActivity.setBackgroundColor(v,Color.GRAY);
 						rule.selectWord(wordIndex);
 				     }
 			     }
@@ -106,6 +156,7 @@ public class RuleActivity extends AppCompatActivity {
 	   W=new Button(this);
 	   W.setText("<END>");
 	   W.setBackgroundColor(Color.GRAY);
+	   //RuleActivity.setBackgroundColor(W,Color.GRAY);
 	   wordButtons.add(W);
 	   myLayout.addView(W);
 	   
@@ -113,6 +164,7 @@ public class RuleActivity extends AppCompatActivity {
 	   for (int i=1; i<=rule.wordsCount;i++){
 		   if (rule.wordIsSelected[i]){
 			   wordButtons.get(i).setBackgroundColor(Color.GRAY);
+			   //RuleActivity.setBackgroundColor(wordButtons.get(i),Color.GRAY);
 		   }
 	   }
 

@@ -2,7 +2,6 @@ package com.khizhny.smsbanking;
 
 
 public class Bank {
-	// Конструктор класса. Задаем дефолтные значения
 	Bank(){
 		id=-1;
 	}

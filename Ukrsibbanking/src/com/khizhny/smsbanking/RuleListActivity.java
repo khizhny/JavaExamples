@@ -44,6 +44,7 @@ public class RuleListActivity extends AppCompatActivity implements OnMenuItemCli
     	DataBaseHelper db = new DataBaseHelper(this);
 	 	db.openDataBase();
 	 	ruleList=db.getAllRules();
+	 	db.close();
 	 	adapter  = new RuleListAdapter(this, ruleList);
 		listView.setAdapter(adapter);		
     }
