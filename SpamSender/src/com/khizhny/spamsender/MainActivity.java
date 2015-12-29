@@ -1,6 +1,7 @@
 package com.khizhny.spamsender;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,9 +9,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -35,10 +38,14 @@ public class MainActivity extends Activity {
 	private int blockSize;
 	private int blockSendDelay;
 	private boolean working;
+	private static Context context;
+	private Button addImage;
+	
 	Thread thread = new Thread(new Runnable(){
 	    @Override
 	    public void run() {
 	    	working=true;
+	    	// reading emails,subjects and body from file
 	    	InputStream in = null;
 			try {
 				in = new FileInputStream(csvPath);
@@ -48,59 +55,76 @@ public class MainActivity extends Activity {
 				working=false;
 			}
 			String line;
-			String[] arr=null;
+			String messageBody="";
+			String dstAddress="";
+			Mail m = new Mail(userName, password,smtpServer,smtpPort);
 			if (in!=null) {
 				BufferedReader reader= new BufferedReader(new InputStreamReader(in));
-				try {
-					line = reader.readLine();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				for (int i=1;i<10000;i++){
+				Boolean timeToSend = false;  // we will set up this flag when file is finished
+				for (int i=1;i<10000;i++){ /// i - quantity of emails sent
 					line="";
-					Boolean timeToExit = false;
-					try {
+					try {  // reading new message from file
 						line = reader.readLine();
-						arr = line.split("\t");
-					} catch (Exception e) {
-						timeToExit=true;
-					}
-					if (!timeToExit){
-						processed=processed+1;				    			    		
-				    		Mail m = new Mail(userName, password,smtpServer,smtpPort); 
-						      try { 
-						    	  m.addAttachment(attachmentPath); 
-					    		  } 
-						      catch(Exception e) {} 						      
-						      try {						      
-							     String[] toArr = {arr[0]}; 
-							      m.setTo(toArr); 
-							      m.setFrom(sender); 
-							      m.setSubject(arr[1]); 
-							      m.setBody(arr[2]); 				   	          
-					   	          m.send();
-					   	          showToast("Sending message #"+processed+ " to " + arr[0]);
-						      } catch(Exception e) { 
-						    	  showToast("Could not send email #"+processed+" to "+ arr[0]);
-						      } 
-				    		
-						}else{
-						i=10000;
-						try {
-							reader.close();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						if (line.equals("<<New Mail>>")){  // new message marker found
+							m = new Mail(userName, password,smtpServer,smtpPort);
+							m.setFrom(sender);
+							timeToSend=false;
+						}						
+						if (line.substring(0, 3).equals("To:")){
+							dstAddress=line.substring(3);
+							m.setTo(dstAddress.split(";"));
 						}
-					}
-					if (i%blockSize==0) {
+						if (line.substring(0, 8).equals("Subject:")){
+							m.setSubject(line.substring(8));
+						}
+						if (line.equals("<<Body Start>>")){
+							while (!line.equals("<<Body End>>") ) {
+								line=reader.readLine();
+								if (!line.equals("<<Body End>>")) {
+									messageBody=messageBody+line+(char)10;
+									}
+							}
+							m.setBody(messageBody);
+							timeToSend=true;
+						}
+						if (timeToSend){
+							try { 
+						    	  m.addAttachment(attachmentPath);
+							} catch (Exception e) {
+								showToast("Could not attach file "+ attachmentPath);
+							} 
+							try { 
+								m.send();
+								showToast("Sending message #"+processed+ " to " + dstAddress);
+							} catch (Exception e) {
+								showToast("Could not send email #"+processed+" to "+ dstAddress);
+							} 
+					   	    timeToSend=false;					   	    
+						    processed=processed+1;
+						    if (i%blockSize==0) {
+								try {									
+									Thread.sleep(blockSendDelay);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}	
+						}						
+					}				 
+					catch (Exception e) 
+					{	
+						working=false;
+						i=10000;
+						addImage.setText("Finished.");
 						try {
-							
-							Thread.sleep(blockSendDelay);
-						} catch (InterruptedException e) {
+						reader.close();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						try {
+							wait();
+						} catch (InterruptedException e2) {
 							// TODO Auto-generated catch block
-							e.printStackTrace();
+							e2.printStackTrace();
 						}
 					}
 				}
@@ -108,10 +132,30 @@ public class MainActivity extends Activity {
 			working=false;
 	    }
 	});
-
+	
+	public void openMailFile(){
+		File mPath = new File(Environment.getExternalStorageDirectory() + "//DIR//");
+		FileDialog fileDialog = new FileDialog(this, mPath);
+        fileDialog.setFileEndsWith(".txt");
+        fileDialog.addFileListener(new FileDialog.FileSelectedListener() {
+            public void fileSelected(File file) {
+                //Log.d(getClass().getName(), "selected file " + file.toString());
+                SharedPreferences settings =PreferenceManager.getDefaultSharedPreferences(MainActivity.context);
+                csvPath=settings.getString("csv_file_path", "/storage/sdcard0/emails.txt");
+            }
+        });
+        //fileDialog.addDirectoryListener(new FileDialog.DirectorySelectedListener() {
+        //  public void directorySelected(File directory) {
+        //      Log.d(getClass().getName(), "selected dir " + directory.toString());
+        //  }
+        //});
+        //fileDialog.setSelectDirectoryOption(false);
+        fileDialog.showDialog();
+	}
 	
 	@Override 
 	public void onCreate(Bundle icicle) { 
+	  context=this;
 	  super.onCreate(icicle); 
 	  setContentView(R.layout.activity_main); 
 	// Restore preferences
@@ -126,11 +170,11 @@ public class MainActivity extends Activity {
 	  attachmentPath=settings.getString("attachmentPath", "/storage/sdcard1/info.txt");
 	  blockSize=Integer.parseInt(settings.getString("blockSize","2"));
 	  blockSendDelay=Integer.parseInt(settings.getString("blockSendDelay", "5"));
-	  final Button addImage = (Button) findViewById(R.id.send_email); 
+	  addImage = (Button) findViewById(R.id.sendEmail); 
 	  addImage.setOnClickListener(new View.OnClickListener() { 
 	    public void onClick(View view) { 
 	    	processed=0;
-	    	if (!working){
+	    	if (working==false){
 	    		addImage.setText("Working...");
 	    		thread.start(); 
 	  		}
